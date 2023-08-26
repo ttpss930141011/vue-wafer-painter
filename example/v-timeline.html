@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>email input example</title>
+        <link rel="stylesheet" href="../dist/main.css" />
+    </head>
+    <body>
+        <div id="app">
+            <div style="width: 500px; margin: 20px">
+                <v-timeline :time-item="activities" />
+            </div>
+        </div>
+        <script type="importmap">
+            {
+                "imports": {
+                    "vue": "https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.41/vue.esm-browser.prod.js"
+                }
+            }
+        </script>
+        <script type="module">
+            import { createApp, ref } from "vue";
+            import { VTimeline } from "../dist/vue-wafer-painter.es.js";
+            createApp({
+                components: {
+                    VTimeline,
+                },
+                setup() {
+                    const activities = ref([
+                        {
+                            content: "Event start",
+                            timestamp: "2018-04-15",
+                        },
+                        {
+                            content: "Approved",
+                            timestamp: "2018-04-13",
+                        },
+                        {
+                            content: "Success",
+                            timestamp: "2018-04-11",
+                        },
+                    ]);
+                    return {
+                        activities,
+                    };
+                },
+            }).mount("#app");
+        </script>
+    </body>
+</html>
