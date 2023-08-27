@@ -5,14 +5,10 @@ concurrency:
   cancel-in-progress: true
 
 on:
-    push:
-        branches:
-        - main
-        - dev
     pull_request:
         branches:
-        - main
-        - dev
+          - '*'
+    workflow_dispatch:
 jobs:
   init:
     name: Initial Common Steps
@@ -26,9 +22,7 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path: |
-            node_modules
-            ~/.cache/Cypress
+          path: node_modules
           key: deps-node-modules-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - uses: pnpm/action-setup@v2
@@ -54,9 +48,7 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path: |
-            node_modules
-            ~/.cache/Cypress
+          path: node_modules
           key: deps-node-modules-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - uses: pnpm/action-setup@v2
@@ -88,9 +80,7 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path: |
-            node_modules
-            ~/.cache/Cypress
+          path: node_modules
           key: deps-node-modules-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - uses: pnpm/action-setup@v2
