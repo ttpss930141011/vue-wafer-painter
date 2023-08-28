@@ -5,10 +5,10 @@ concurrency:
   cancel-in-progress: true
 
 on:
-    pull_request:
-        branches:
-          - '*'
-    workflow_dispatch:
+  pull_request:
+    branches:
+      - '*'
+  workflow_dispatch:
 jobs:
   init:
     name: Initial Common Steps
@@ -63,7 +63,7 @@ jobs:
 
       - name: Unit Test
         run: pnpm test:unit
-        
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -106,7 +106,7 @@ jobs:
         id: cache
         uses: actions/cache@v3
         with:
-          path: node_modules            
+          path: node_modules
           key: deps-node-modules-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - uses: pnpm/action-setup@v2
@@ -118,9 +118,9 @@ jobs:
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: pnpm install --frozen-lockfile
-        
+
       - name: knip
-        env: 
+        env:
           GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
         run: |
           pnpm knip > knipScanResult.txt 2>&1

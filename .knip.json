@@ -1,43 +1,38 @@
 {
-    "paths": {
-      "@/*": ["./*"]
-    },
-    "rules": {
-      "files": "warn",
-      "unlisted": "off"
-    },
-    "eslint": {
-      "config": [
-        ".eslintrc",
-        ".eslintrc.{js,json,cjs}",
-        ".eslintrc.{yml,yaml}",
-        "package.json"
-      ],
-      "entry": ["eslint.config.js"]
-    },
-    "github-actions": {
-      "config": [".github/workflows/*.yml", ".github/**/action.{yml,yaml}"]
-    },
-    "husky": {
-      "config": [
-        ".husky/commit-msg",
-        ".husky/pre-{applypatch,commit,merge-commit,push,rebase,receive}",
-        ".husky/post-{checkout,commit,merge,rewrite}"
-      ]
-    },
-    "vite": {
-      "entry": ["vite.config.{js,ts}"]
-    },
-    "prettier": {
-      "config": [
-        ".prettierrc",
-        ".prettierrc.{json,js,cjs,yml,yaml}",
-        "prettier.config.{js,cjs}",
-        "package.json"
-      ]
-    },
-    "typescript": {
-      "entry": "next-env.d.ts",
-      "config": ["tsconfig.json"]
-    }
+  "paths": {
+    "@/*": ["./*"]
+  },
+  "rules": {
+    "files": "warn",
+    "unlisted": "off"
+  },
+  "eslint": {
+    "config": [".eslintrc", ".eslintrc.{js,json,cjs}", ".eslintrc.{yml,yaml}", "package.json"],
+    "entry": ["eslint.config.js"]
+  },
+  "github-actions": {
+    "config": [".github/workflows/*.yml", ".github/**/action.{yml,yaml}"]
+  },
+  "husky": {
+    "config": [
+      ".husky/commit-msg",
+      ".husky/pre-{applypatch,commit,merge-commit,push,rebase,receive}",
+      ".husky/post-{checkout,commit,merge,rewrite}"
+    ]
+  },
+  "vite": {
+    "entry": ["vite.config.{js,ts}"]
+  },
+  "prettier": {
+    "config": [
+      ".prettierrc",
+      ".prettierrc.{json,js,cjs,yml,yaml}",
+      "prettier.config.{js,cjs}",
+      "package.json"
+    ]
+  },
+  "typescript": {
+    "entry": "next-env.d.ts",
+    "config": ["tsconfig.json"]
   }
+}
