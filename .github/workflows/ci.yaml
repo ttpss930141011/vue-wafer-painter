@@ -28,7 +28,7 @@ jobs:
       - uses: pnpm/action-setup@v2
         name: Install pnpm
         with:
-          version: 7
+          version: 8.5.1
           run_install: false
 
       - name: Install dependencies
@@ -54,7 +54,7 @@ jobs:
       - uses: pnpm/action-setup@v2
         name: Install pnpm
         with:
-          version: 7
+          version: 8.5.1
           run_install: false
 
       - name: Install dependencies
@@ -83,7 +83,7 @@ jobs:
       - uses: pnpm/action-setup@v2
         name: Install pnpm
         with:
-          version: 7
+          version: 8.5.1
           run_install: false
 
       - name: Install dependencies
@@ -112,7 +112,7 @@ jobs:
       - uses: pnpm/action-setup@v2
         name: Install pnpm
         with:
-          version: 7
+          version: 8.5.1
           run_install: false
 
       - name: Install dependencies
