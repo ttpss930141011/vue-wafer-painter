@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>email input example</title>
+    <link rel="stylesheet" href="../dist/main.css" />
+  </head>
+  <body>
+    <div id="app">
+      <v-wafermap :coords="coords" />
+    </div>
+    <script type="importmap">
+      {
+        "imports": {
+          "vue": "https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.7/vue.esm-browser.prod.js"
+        }
+      }
+    </script>
+    <script>
+      const c = document.getElementById('myCanvas')
+      const ctx = c.getContext('2d')
+      ctx.beginPath()
+      ctx.arc(250, 250, 250, 0, 2 * Math.PI)
+      ctx.stroke()
+    </script>
+    <script type="module">
+      import { createApp, ref } from 'vue'
+      import { VWafermap } from '../dist/vue-wafer-painter.es.js'
+
+      createApp({
+        components: {
+          VWafermap
+        },
+        setup() {
+          const coords = ref([
+            {
+              info: '1',
+              x: 0,
+              y: 0,
+              color: 'red'
+            },
+            {
+              info: '2',
+              x: 0,
+              y: 1,
+              color: 'green'
+            },
+            {
+              info: '3',
+              x: 0,
+              y: 2,
+              color: 'blue'
+            },
+            {
+              info: '4',
+              x: 1,
+              y: 0,
+              color: 'red'
+            },
+            {
+              info: '5',
+              x: 1,
+              y: 1,
+              color: 'green'
+            },
+            {
+              info: '6',
+              x: 1,
+              y: 2,
+              color: 'blue'
+            },
+            {
+              info: '7',
+              x: 2,
+              y: 0,
+              color: 'red'
+            },
+            {
+              info: '8',
+              x: 2,
+              y: 1,
+              color: 'green'
+            },
+            {
+              info: '9',
+              x: 2,
+              y: 2,
+              color: 'blue'
+            }
+          ])
+          return {
+            coords
+          }
+        }
+      }).mount('#app')
+    </script>
+  </body>
+</html>
