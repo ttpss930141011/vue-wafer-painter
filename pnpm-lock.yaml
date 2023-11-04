@@ -6,7 +6,7 @@ settings:
 
 dependencies:
   '@popperjs/core':
-    specifier: ^2.11.8
+    specifier: 2.11.8
     version: 2.11.8
   vue:
     specifier: 3.3.4
@@ -77,10 +77,10 @@ devDependencies:
     specifier: 3.0.2
     version: 3.0.2
   sass:
-    specifier: ^1.66.1
+    specifier: 1.69.2
     version: 1.69.2
   shell-quote:
-    specifier: ^1.8.1
+    specifier: 1.8.1
     version: 1.8.1
   start-server-and-test:
     specifier: 2.0.0
