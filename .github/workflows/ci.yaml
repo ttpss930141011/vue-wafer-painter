@@ -33,7 +33,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
   test:
     name: Test
@@ -59,7 +59,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Unit Test
         run: pnpm test:unit
@@ -88,7 +88,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: lint
         run: npx eslint@7.32.0 --no-error-on-unmatched-pattern -c .eslintrc.cjs $(git diff --name-only --relative --diff-filter=ACMRTUXB HEAD~1 | grep  -E ".(js|jsx|ts|tsx)$")
@@ -117,7 +117,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: knip
         env:

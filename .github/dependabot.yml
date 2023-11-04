@@ -16,7 +16,7 @@ updates:
       interval: 'weekly'
     commit-message:
       prefix: '[DEPENDA-BOT] '
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 0
     labels:
       - 'dependency alerts'
       - 'security'
