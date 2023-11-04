@@ -45,7 +45,7 @@
     "shell-quote": "^1.8.1",
     "start-server-and-test": "2.0.0",
     "typescript": "5.2.2",
-    "vite": "4.4.9",
+    "vite": "4.5.0",
     "vitest": "0.34.5",
     "vue-tsc": "1.8.15"
   },
