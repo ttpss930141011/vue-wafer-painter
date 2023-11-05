@@ -9,7 +9,13 @@
         :style="bgStyle"
       ></canvas>
 
-      <canvas ref="waferMap" class="vwp-wafermap" :style="mapStyle"></canvas>
+      <canvas
+        ref="waferMap"
+        class="vwp-wafermap"
+        :width="mapInfo.width * mapInfo.scaleSize"
+        :height="mapInfo.height * mapInfo.scaleSize"
+        :style="mapStyle"
+      ></canvas>
       <canvas ref="waferGrid" class="vwp-grid" :style="gridStyle"></canvas>
       <div ref="waferFocus" class="vwp-focus" :style="focusStyle"></div>
       <div ref="focusPopper" :style="floatingStyles">
@@ -48,7 +54,7 @@ const mapInfo = reactive<WafermapProps>({
   grid: 'On',
   notch: 'Top',
   enableDrawLine: true,
-  scaleSize: 0.9
+  scaleSize: 0.7
 })
 
 // 當 width 或 height 改變，waferBg.height 與 waferBg.width 也會跟著改變
@@ -61,54 +67,58 @@ const bgStyle = computed(() => ({
 const mapStyle = computed(() => ({
   height: `${mapInfo.height * mapInfo.scaleSize}px`,
   width: `${mapInfo.width * mapInfo.scaleSize}px`,
-  paddingTop: `${mapPosOffsetY.value}px`,
+  paddingTop: `${mapPaddingTop.value}px`,
   paddingRight: '0px',
   paddingBottom: '0px',
-  paddingLeft: `${mapPosOffsetX.value}px`
+  paddingLeft: `${mapPaddingLeft.value}px`
 }))
 
 const gridStyle = computed(() => ({
   height: `${mapInfo.height * mapInfo.scaleSize}px`,
   width: `${mapInfo.width * mapInfo.scaleSize}px`,
-  paddingTop: `${mapPosOffsetY.value}px`,
+  paddingTop: `${mapPaddingTop.value}px`,
   paddingRight: '0px',
   paddingBottom: '0px',
-  paddingLeft: `${mapPosOffsetX.value}px`
+  paddingLeft: `${mapPaddingLeft.value}px`
 }))
 
 const focusStyle = computed(() => ({
   height: `${dieHeight.value}px`,
   width: `${dieWidth.value}px`,
-  top: `${mapPosOffsetY.value}px`,
-  left: `${mapPosOffsetX.value}px`
+  top: `${mapPaddingTop.value}px`,
+  left: `${mapPaddingLeft.value}px`
 }))
 
-const mapPosOffsetX = computed(() => (mapInfo.width - mapInfo.width * mapInfo.scaleSize) / 2)
-const mapPosOffsetY = computed(() => (mapInfo.height - mapInfo.height * mapInfo.scaleSize) / 2)
+const mapPaddingLeft = computed(() => (mapInfo.width - mapInfo.width * mapInfo.scaleSize) / 2)
+const mapPaddingTop = computed(() => (mapInfo.height - mapInfo.height * mapInfo.scaleSize) / 2)
 
-const offsetValueX = computed(() => {
+const minX = computed(() => {
   const xCoords = coords.map((item) => item.x)
   return _.min(xCoords) ?? 0
 })
-const offsetValueY = computed(() => {
+
+const minY = computed(() => {
   const yCoords = coords.map((item) => item.y)
   return _.min(yCoords) ?? 0
 })
 
 const maxX = computed(() => {
   const xCoords = coords.map((item) => item.x)
-  const maxXCoord = _.max(xCoords) ?? 0
-  return maxXCoord + 2 - offsetValueX.value ?? 0
+  return _.max(xCoords) ?? 0
 })
 
 const maxY = computed(() => {
   const yCoords = coords.map((item) => item.y)
-  const maxYCoord = _.max(yCoords) ?? 0
-  return maxYCoord + 2 - offsetValueY.value ?? 0
+  return _.max(yCoords) ?? 0
 })
 
-const dieWidth = computed(() => (mapInfo.width / maxX.value) * mapInfo.scaleSize)
-const dieHeight = computed(() => (mapInfo.height / maxY.value) * mapInfo.scaleSize)
+console.log(minX.value, minY.value)
+console.log(maxX.value, maxY.value)
+
+const dieWidth = computed(() => (mapInfo.width * mapInfo.scaleSize) / (maxX.value - minX.value + 1))
+const dieHeight = computed(
+  () => (mapInfo.height * mapInfo.scaleSize) / (maxY.value - minY.value + 1)
+)
 
 const onDieInfo = reactive({
   x: null,
@@ -160,44 +170,59 @@ const drawBackgroupd = () => {
   ctx.fill()
 }
 
+const drawFillRect = () => {
+  const ctx = waferMap.value?.getContext('2d')
+  if (!ctx) return
+  ctx.clearRect(0, 0, mapInfo.width, mapInfo.height)
+
+  for (const bin of coords) {
+    ctx.fillStyle = bin.color
+    ctx.fillRect(bin.x * dieWidth.value, bin.y * dieHeight.value, dieWidth.value, dieHeight.value)
+  }
+}
+
 const setFocueMoveEvent = (e: any) => {
   console.log(e)
 }
 onMounted(() => {
   waferGrid.value?.addEventListener('mousemove', setFocueMoveEvent, false)
   drawBackgroupd()
+  drawFillRect()
 })
 
 onBeforeUnmount(() => {
   waferGrid.value?.removeEventListener('mousemove', setFocueMoveEvent, false)
 })
 </script>
+
 <style scoped>
 #wafermap-container {
   position: relative;
   overflow: scroll;
   background-color: #ffffff;
-}
-.vwp-container {
-  width: 1000px;
-  height: 1000px;
-  position: relative;
-}
-.vwp-background {
-  position: absolute;
-  overflow-x: hidden;
-}
-.vwp-wafermap {
-  position: absolute;
-  overflow-x: hidden;
-}
-.vwp-focus {
-  position: relative;
-  overflow-x: hidden;
-  border: 2px solid blue;
-}
-.vwp-grid {
-  position: absolute;
-  overflow-x: hidden;
+
+  .vwp-container {
+    width: 500px;
+    height: 500px;
+    position: relative;
+  }
+
+  .vwp-background {
+    position: absolute;
+    overflow-x: hidden;
+  }
+  .vwp-wafermap {
+    position: absolute;
+    overflow-x: hidden;
+  }
+  .vwp-focus {
+    position: relative;
+    overflow-x: hidden;
+    border: 2px solid blue;
+  }
+  .vwp-grid {
+    position: absolute;
+    overflow-x: hidden;
+  }
 }
 </style>
