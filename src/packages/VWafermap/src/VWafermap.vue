@@ -12,18 +12,24 @@
       <canvas
         ref="waferMap"
         class="vwp-wafermap"
-        :width="mapInfo.width * mapInfo.scaleSize"
-        :height="mapInfo.height * mapInfo.scaleSize"
+        :width="mapInfo.width * mapInfo.scaleSize + canvasLineSpace"
+        :height="mapInfo.height * mapInfo.scaleSize + canvasLineSpace"
         :style="mapStyle"
       ></canvas>
-      <canvas ref="waferGrid" class="vwp-grid" :style="gridStyle"></canvas>
-      <div ref="waferFocus" class="vwp-focus" :style="focusStyle"></div>
+      <canvas
+        ref="waferGrid"
+        class="vwp-grid"
+        :width="mapInfo.width * mapInfo.scaleSize + canvasLineSpace"
+        :height="mapInfo.height * mapInfo.scaleSize + canvasLineSpace"
+        :style="gridStyle"
+      ></canvas>
+      <!-- <div ref="waferFocus" class="vwp-focus" :style="focusStyle"></div>
       <div ref="focusPopper" :style="floatingStyles">
         <p>({{ onDieInfo.x }},{{ onDieInfo.y }})</p>
         <p>Bin: {{ onDieInfo.bin }}</p>
         <p>Site: {{ onDieInfo.site }}</p>
         <div ref="popperArrow" data-popper-arrow></div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -48,6 +54,10 @@ const { coords } = defineProps({
   }
 })
 
+const xAsixTextRowCount = 1
+const yAsixTextColCount = 1
+const canvasLineSpace = 1
+
 const mapInfo = reactive<WafermapProps>({
   width: 500,
   height: 500,
@@ -65,8 +75,8 @@ const bgStyle = computed(() => ({
 }))
 
 const mapStyle = computed(() => ({
-  height: `${mapInfo.height * mapInfo.scaleSize}px`,
-  width: `${mapInfo.width * mapInfo.scaleSize}px`,
+  height: `${mapInfo.height * mapInfo.scaleSize + canvasLineSpace}px`,
+  width: `${mapInfo.width * mapInfo.scaleSize + canvasLineSpace}px`,
   paddingTop: `${mapPaddingTop.value}px`,
   paddingRight: '0px',
   paddingBottom: '0px',
@@ -74,8 +84,8 @@ const mapStyle = computed(() => ({
 }))
 
 const gridStyle = computed(() => ({
-  height: `${mapInfo.height * mapInfo.scaleSize}px`,
-  width: `${mapInfo.width * mapInfo.scaleSize}px`,
+  height: `${mapInfo.height * mapInfo.scaleSize + canvasLineSpace}px`,
+  width: `${mapInfo.width * mapInfo.scaleSize + canvasLineSpace}px`,
   paddingTop: `${mapPaddingTop.value}px`,
   paddingRight: '0px',
   paddingBottom: '0px',
@@ -112,13 +122,19 @@ const maxY = computed(() => {
   return _.max(yCoords) ?? 0
 })
 
-console.log(minX.value, minY.value)
-console.log(maxX.value, maxY.value)
-
-const dieWidth = computed(() => (mapInfo.width * mapInfo.scaleSize) / (maxX.value - minX.value + 1))
-const dieHeight = computed(
-  () => (mapInfo.height * mapInfo.scaleSize) / (maxY.value - minY.value + 1)
+const dieWidth = computed(
+  () => (mapInfo.width * mapInfo.scaleSize) / (maxX.value - minX.value + yAsixTextColCount + 1)
 )
+const dieHeight = computed(
+  () => (mapInfo.height * mapInfo.scaleSize) / (maxY.value - minY.value + xAsixTextRowCount + 1)
+)
+
+const fontSize = computed(() => {
+  const maxXY = Math.max(maxX.value, maxY.value)
+  const minDieHW = Math.min(dieWidth.value, dieHeight.value)
+  const fontSize = minDieHW / String(maxXY).length
+  return fontSize
+})
 
 const onDieInfo = reactive({
   x: null,
@@ -175,11 +191,60 @@ const drawFillRect = () => {
   if (!ctx) return
   ctx.clearRect(0, 0, mapInfo.width, mapInfo.height)
 
-  for (const bin of coords) {
-    ctx.fillStyle = bin.color
-    ctx.fillRect(bin.x * dieWidth.value, bin.y * dieHeight.value, dieWidth.value, dieHeight.value)
+  for (const coord of coords) {
+    ctx.fillStyle = coord.color
+    ctx.fillRect(
+      (coord.x + yAsixTextColCount) * dieWidth.value,
+      (coord.y + xAsixTextRowCount) * dieHeight.value,
+      dieWidth.value,
+      dieHeight.value
+    )
   }
 }
+
+const drawGrid = () => {
+  const ctx = waferGrid.value?.getContext('2d')
+  if (!ctx) return
+  ctx.clearRect(0, 0, mapInfo.width, mapInfo.height)
+  ctx.beginPath()
+  ctx.strokeStyle = 'rgb(242,242,242)'
+  ctx.lineWidth = 1
+
+  ctx.font = `${fontSize.value}px Arial`
+
+  //vertical line
+  for (
+    let x = minX.value + yAsixTextColCount;
+    x <= maxX.value - minX.value + yAsixTextColCount + 1;
+    x++
+  ) {
+    let tmpx = Math.floor(x * dieWidth.value) + 0.5
+    ctx.moveTo(tmpx, dieHeight.value)
+    ctx.lineTo(tmpx, (maxY.value + xAsixTextRowCount + 1) * dieHeight.value)
+    ctx.stroke()
+
+    ctx.fillText(
+      String(x - yAsixTextColCount),
+      x * dieWidth.value + dieWidth.value / 4,
+      dieHeight.value / 1.5
+    ) // X-Axis text
+  }
+
+  //horizontal line
+  for (
+    let y = minY.value + xAsixTextRowCount;
+    y <= maxY.value - minY.value + xAsixTextRowCount + 1;
+    y++
+  ) {
+    let tmpy = Math.floor(y * dieHeight.value) + 0.5
+    ctx.moveTo(dieWidth.value, tmpy)
+    ctx.lineTo((maxX.value + yAsixTextColCount + 1) * dieWidth.value, tmpy)
+    ctx.stroke()
+    ctx.fillText(String(y - xAsixTextRowCount), 0, y * dieHeight.value + dieHeight.value / 1.5) // Y-Axis text
+  }
+}
+
+// TODO: Decuple drawGrid and drawAxisText
 
 const setFocueMoveEvent = (e: any) => {
   console.log(e)
@@ -188,6 +253,7 @@ onMounted(() => {
   waferGrid.value?.addEventListener('mousemove', setFocueMoveEvent, false)
   drawBackgroupd()
   drawFillRect()
+  drawGrid()
 })
 
 onBeforeUnmount(() => {
