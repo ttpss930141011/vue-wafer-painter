@@ -19,7 +19,7 @@
     "@floating-ui/vue": "1.0.2",
     "@popperjs/core": "2.11.8",
     "lodash": "4.17.21",
-    "vue": "3.3.4"
+    "vue": "3.3.8"
   },
   "devDependencies": {
     "@actions/github": "6.0.0",
