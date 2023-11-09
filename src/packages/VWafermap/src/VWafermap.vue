@@ -17,11 +17,25 @@
         :style="mapStyle"
       ></canvas>
       <canvas
+        ref="waferInfo"
+        class="vwp-waferinfo"
+        :width="mapInfo.width * mapInfo.scaleSize + canvasLineSpace"
+        :height="mapInfo.height * mapInfo.scaleSize + canvasLineSpace"
+        :style="infoStyle"
+      ></canvas>
+      <canvas
         ref="waferGrid"
         class="vwp-grid"
         :width="mapInfo.width * mapInfo.scaleSize + canvasLineSpace"
         :height="mapInfo.height * mapInfo.scaleSize + canvasLineSpace"
         :style="gridStyle"
+      ></canvas>
+      <canvas
+        ref="waferAxisValues"
+        class="vwp-axis-values"
+        :width="mapInfo.width * mapInfo.scaleSize + canvasLineSpace"
+        :height="mapInfo.height * mapInfo.scaleSize + canvasLineSpace"
+        :style="axisValueStyle"
       ></canvas>
       <!-- <div ref="waferFocus" class="vwp-focus" :style="focusStyle"></div>
       <div ref="focusPopper" :style="floatingStyles">
@@ -45,7 +59,9 @@ const popperArrow = ref<HTMLElement | null>(null)
 const waferMapContainer = ref<HTMLElement | null>(null)
 const waferBg = ref<HTMLCanvasElement | null>(null)
 const waferMap = ref<HTMLCanvasElement | null>(null)
+const waferInfo = ref<HTMLCanvasElement | null>(null)
 const waferGrid = ref<HTMLCanvasElement | null>(null)
+const waferAxisValues = ref<HTMLCanvasElement | null>(null)
 
 const { coords } = defineProps({
   coords: {
@@ -83,7 +99,25 @@ const mapStyle = computed(() => ({
   paddingLeft: `${mapPaddingLeft.value}px`
 }))
 
+const infoStyle = computed(() => ({
+  height: `${mapInfo.height * mapInfo.scaleSize + canvasLineSpace}px`,
+  width: `${mapInfo.width * mapInfo.scaleSize + canvasLineSpace}px`,
+  paddingTop: `${mapPaddingTop.value}px`,
+  paddingRight: '0px',
+  paddingBottom: '0px',
+  paddingLeft: `${mapPaddingLeft.value}px`
+}))
+
 const gridStyle = computed(() => ({
+  height: `${mapInfo.height * mapInfo.scaleSize + canvasLineSpace}px`,
+  width: `${mapInfo.width * mapInfo.scaleSize + canvasLineSpace}px`,
+  paddingTop: `${mapPaddingTop.value}px`,
+  paddingRight: '0px',
+  paddingBottom: '0px',
+  paddingLeft: `${mapPaddingLeft.value}px`
+}))
+
+const axisValueStyle = computed(() => ({
   height: `${mapInfo.height * mapInfo.scaleSize + canvasLineSpace}px`,
   width: `${mapInfo.width * mapInfo.scaleSize + canvasLineSpace}px`,
   paddingTop: `${mapPaddingTop.value}px`,
@@ -129,11 +163,11 @@ const dieHeight = computed(
   () => (mapInfo.height * mapInfo.scaleSize) / (maxY.value - minY.value + xAsixTextRowCount + 1)
 )
 
-const fontSize = computed(() => {
+const gridFontSize = computed(() => {
   const maxXY = Math.max(maxX.value, maxY.value)
   const minDieHW = Math.min(dieWidth.value, dieHeight.value)
-  const fontSize = minDieHW / String(maxXY).length
-  return fontSize
+  const gridFontSize = minDieHW / String(maxXY).length
+  return gridFontSize
 })
 
 const onDieInfo = reactive({
@@ -148,6 +182,11 @@ const { floatingStyles } = useFloating(waferFocus, focusPopper, {
   middleware: [offset(10)]
 })
 
+/**
+ * Draws the background of the canvas.
+ *
+ * @return {void} This function does not return any value.
+ */
 const drawBackgroupd = () => {
   const ctx = waferBg.value?.getContext('2d')
   if (!ctx) return
@@ -186,6 +225,11 @@ const drawBackgroupd = () => {
   ctx.fill()
 }
 
+/**
+ * Draws filled rectangles on the canvas.
+ *
+ * @return {void} The function does not return a value.
+ */
 const drawFillRect = () => {
   const ctx = waferMap.value?.getContext('2d')
   if (!ctx) return
@@ -202,6 +246,11 @@ const drawFillRect = () => {
   }
 }
 
+/**
+ * Draws a grid on the canvas.
+ *
+ * @return {void} No return value.
+ */
 const drawGrid = () => {
   const ctx = waferGrid.value?.getContext('2d')
   if (!ctx) return
@@ -210,7 +259,7 @@ const drawGrid = () => {
   ctx.strokeStyle = 'rgb(242,242,242)'
   ctx.lineWidth = 1
 
-  ctx.font = `${fontSize.value}px Arial`
+  ctx.font = `${gridFontSize.value}px Arial`
 
   //vertical line
   for (
@@ -218,16 +267,10 @@ const drawGrid = () => {
     x <= maxX.value - minX.value + yAsixTextColCount + 1;
     x++
   ) {
-    let tmpx = Math.floor(x * dieWidth.value) + 0.5
-    ctx.moveTo(tmpx, dieHeight.value)
-    ctx.lineTo(tmpx, (maxY.value + xAsixTextRowCount + 1) * dieHeight.value)
+    const xFixedPos = Math.floor(x * dieWidth.value) + 0.5
+    ctx.moveTo(xFixedPos, dieHeight.value)
+    ctx.lineTo(xFixedPos, (maxY.value + xAsixTextRowCount + 1) * dieHeight.value)
     ctx.stroke()
-
-    ctx.fillText(
-      String(x - yAsixTextColCount),
-      x * dieWidth.value + dieWidth.value / 4,
-      dieHeight.value / 1.5
-    ) // X-Axis text
   }
 
   //horizontal line
@@ -236,15 +279,133 @@ const drawGrid = () => {
     y <= maxY.value - minY.value + xAsixTextRowCount + 1;
     y++
   ) {
-    let tmpy = Math.floor(y * dieHeight.value) + 0.5
-    ctx.moveTo(dieWidth.value, tmpy)
-    ctx.lineTo((maxX.value + yAsixTextColCount + 1) * dieWidth.value, tmpy)
+    const yfixedPos = Math.floor(y * dieHeight.value) + 0.5
+    ctx.moveTo(dieWidth.value, yfixedPos)
+    ctx.lineTo((maxX.value + yAsixTextColCount + 1) * dieWidth.value, yfixedPos)
     ctx.stroke()
-    ctx.fillText(String(y - xAsixTextRowCount), 0, y * dieHeight.value + dieHeight.value / 1.5) // Y-Axis text
   }
 }
 
-// TODO: Decuple drawGrid and drawAxisText
+/**
+ * Draws the axis values on the canvas.
+ *
+ * @return {void}
+ */
+const drawAxisValues = () => {
+  const ctx = waferAxisValues.value?.getContext('2d')
+  if (!ctx) return
+  ctx.clearRect(0, 0, mapInfo.width, mapInfo.height)
+  ctx.beginPath()
+  ctx.strokeStyle = 'rgb(242,242,242)'
+  ctx.lineWidth = 1
+
+  ctx.font = `${gridFontSize.value}px Arial`
+  //vertical line
+  for (
+    let x = minX.value + yAsixTextColCount;
+    x <= maxX.value - minX.value + yAsixTextColCount;
+    x++
+  ) {
+    const offsetWidth = (dieWidth.value - ctx.measureText(String(x - yAsixTextColCount)).width) / 2
+    const offsetHeight = (dieHeight.value - gridFontSize.value) / 2
+
+    ctx.fillText(
+      String(x - yAsixTextColCount),
+      x * dieWidth.value + offsetWidth,
+      offsetHeight + dieHeight.value,
+      dieWidth.value
+    )
+  }
+
+  //horizontal line
+  for (
+    let y = minY.value + xAsixTextRowCount;
+    y <= maxY.value - minY.value + xAsixTextRowCount;
+    y++
+  ) {
+    const offsetHeight = (dieHeight.value - gridFontSize.value) / 2
+
+    ctx.fillText(
+      String(y - xAsixTextRowCount),
+      0,
+      (y + xAsixTextRowCount) * dieHeight.value + offsetHeight,
+      dieWidth.value
+    )
+  }
+}
+/**
+ * Calculates the font size and offset values for rendering text in a canvas context.
+ *
+ * @param {Coords['info']} info - The info array containing the text strings.
+ * @return {Object} An object containing the calculated font size, offset width, and offset height.
+ */
+const getDieTextInfo = (info: Coords['info']) => {
+  const ctx = waferInfo.value?.getContext('2d')
+  if (!ctx) return
+
+  let fontSize = dieWidth.value > dieHeight.value ? dieHeight.value * 0.5 : dieWidth.value * 0.5
+  const longestString = info.reduce((a, b) => (a.length > b.length ? a : b), '')
+  console.log(fontSize)
+  ctx.font = `${fontSize}px Arial`
+
+  while (ctx.measureText(longestString).width > dieWidth.value) {
+    //去計算他會不會超出邊界，會的話就fontsize--
+    fontSize -= 0.5
+    ctx.font = `${fontSize}px Arial`
+  }
+  while (info.length * fontSize > dieHeight.value) {
+    //因為要上下擺放，所以要計算疊起來會不會超過邊界，會的話也fontsize--
+    fontSize -= 0.5
+    ctx.font = `${fontSize}px Arial`
+  }
+
+  const textWidth = ctx.measureText(longestString).width
+  const textHeight = fontSize * info.length
+  const offsetWidth = (dieWidth.value - textWidth) / 2
+  const offsetHeight = (dieHeight.value - textHeight) / 2
+
+  //第零個參數是font size給外面的接，第一個是width偏移值，第二個是height偏移值
+  return {
+    fontSize,
+    offsetWidth,
+    offsetHeight
+  }
+}
+/**
+ * Draws filled text on the canvas.
+ *
+ * @return {void}
+ */
+const drawFillText = () => {
+  const ctx = waferInfo.value?.getContext('2d')
+  if (!ctx) return
+  ctx.fillStyle = 'black'
+  for (const coord of coords) {
+    const dieTextInfo = getDieTextInfo(coord.info)
+    if (!dieTextInfo) return
+    const { fontSize, offsetWidth, offsetHeight } = dieTextInfo
+    ctx.font = `${fontSize}px Arial`
+    // console.log(fontSize)
+    if (coord.info.length > 1) {
+      //bin值1個以上需要斷行處理
+      coord.info.forEach((info, index) => {
+        ctx.fillText(
+          info,
+          (coord.x + yAsixTextColCount) * dieWidth.value + offsetWidth,
+          (coord.y + xAsixTextRowCount) * dieHeight.value + offsetHeight + (index + 1) * fontSize
+        )
+      })
+    } else {
+      //bin值只有一個就不需要斷行
+      const info = coord.info[0]
+      ctx.fillText(
+        info,
+        (coord.x + yAsixTextColCount) * dieWidth.value + offsetWidth,
+        (coord.y + xAsixTextRowCount) * dieHeight.value + (fontSize + dieHeight.value) / 2
+      )
+    }
+  }
+}
 
 const setFocueMoveEvent = (e: any) => {
   console.log(e)
@@ -254,6 +415,8 @@ onMounted(() => {
   drawBackgroupd()
   drawFillRect()
   drawGrid()
+  drawFillText()
+  drawAxisValues()
 })
 
 onBeforeUnmount(() => {
@@ -263,13 +426,9 @@ onBeforeUnmount(() => {
 
 <style scoped>
 #wafermap-container {
-  position: relative;
-  overflow: scroll;
-  background-color: #ffffff;
-
   .vwp-container {
-    width: 500px;
-    height: 500px;
+    width: fit-content;
+    height: fit-content;
     position: relative;
   }
 
@@ -281,12 +440,20 @@ onBeforeUnmount(() => {
     position: absolute;
     overflow-x: hidden;
   }
+  .vwp-waferinfo {
+    position: absolute;
+    overflow-x: hidden;
+  }
   .vwp-focus {
     position: relative;
     overflow-x: hidden;
     border: 2px solid blue;
   }
   .vwp-grid {
+    position: absolute;
+    overflow-x: hidden;
+  }
+  .vwp-axis-values {
     position: absolute;
     overflow-x: hidden;
   }

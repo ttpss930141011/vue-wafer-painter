@@ -1,5 +1,5 @@
 export interface Coords {
-  info: string
+  info: Array<string>
   x: number
   y: number
   color: string
