@@ -12,4 +12,6 @@ export interface WafermapProps {
   notch: 'Top' | 'Bottom' | 'Left' | 'Right'
   enableDrawLine: boolean
   scaleSize: number
+  focusBorderColor: string
+  focusBorderWidth: number
 }

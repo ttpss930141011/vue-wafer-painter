@@ -37,13 +37,13 @@
         :height="mapInfo.height * mapInfo.scaleSize + canvasLineSpace"
         :style="axisValueStyle"
       ></canvas>
-      <!-- <div ref="waferFocus" class="vwp-focus" :style="focusStyle"></div>
+      <div ref="waferFocus" class="vwp-focus" :style="focusStyle"></div>
       <div ref="focusPopper" :style="floatingStyles">
         <p>({{ onDieInfo.x }},{{ onDieInfo.y }})</p>
         <p>Bin: {{ onDieInfo.bin }}</p>
         <p>Site: {{ onDieInfo.site }}</p>
         <div ref="popperArrow" data-popper-arrow></div>
-      </div> -->
+      </div>
     </div>
   </div>
 </template>
@@ -53,7 +53,7 @@ import type { Coords, WafermapProps } from './types'
 import { useFloating, offset } from '@floating-ui/vue'
 import _ from 'lodash'
 
-const waferFocus = ref<Element | null>(null)
+const waferFocus = ref<HTMLElement | null>(null)
 const focusPopper = ref<HTMLElement | null>(null)
 const popperArrow = ref<HTMLElement | null>(null)
 const waferMapContainer = ref<HTMLElement | null>(null)
@@ -80,7 +80,9 @@ const mapInfo = reactive<WafermapProps>({
   grid: 'On',
   notch: 'Top',
   enableDrawLine: true,
-  scaleSize: 0.7
+  scaleSize: 0.7,
+  focusBorderColor: 'blue',
+  focusBorderWidth: 2
 })
 
 // 當 width 或 height 改變，waferBg.height 與 waferBg.width 也會跟著改變
@@ -127,10 +129,11 @@ const axisValueStyle = computed(() => ({
 }))
 
 const focusStyle = computed(() => ({
-  height: `${dieHeight.value}px`,
-  width: `${dieWidth.value}px`,
+  height: `${dieHeight.value - mapInfo.focusBorderWidth}px`,
+  width: `${dieWidth.value - mapInfo.focusBorderWidth}px`,
   top: `${mapPaddingTop.value}px`,
-  left: `${mapPaddingLeft.value}px`
+  left: `${mapPaddingLeft.value}px`,
+  border: `${mapInfo.focusBorderWidth}px solid ${mapInfo.focusBorderColor}`
 }))
 
 const mapPaddingLeft = computed(() => (mapInfo.width - mapInfo.width * mapInfo.scaleSize) / 2)
@@ -407,20 +410,44 @@ const drawFillText = () => {
   }
 }
 
-const setFocueMoveEvent = (e: any) => {
-  console.log(e)
+const onDieInfoEvent = (dieInfo: Coords, minX: number, minY: number) => {
+  console.log('onDieInfoEvent', dieInfo, minX, minY)
+}
+
+const getDieInfo = (dieX: number, dieY: number) => {
+  return coords.find((coord) => coord.x == dieX && coord.y == dieY)
+}
+
+const setFocueMoveEvent = (e: MouseEvent) => {
+  const mouseX = e.offsetX
+  const mouseY = e.offsetY
+
+  const onDieX = Math.floor((mouseX - mapPaddingLeft.value) / dieWidth.value) - yAsixTextColCount
+  const onDieY = Math.floor((mouseY - mapPaddingTop.value) / dieHeight.value) - xAsixTextRowCount
+
+  const dieInfo = getDieInfo(onDieX, onDieY)
+
+  if (!dieInfo) return
+  onDieInfoEvent(dieInfo, minX.value, minX.value)
+
+  const posTop = (onDieY + xAsixTextRowCount) * dieHeight.value + mapPaddingTop.value
+  const posLeft = (onDieX + yAsixTextColCount) * dieWidth.value + mapPaddingLeft.value
+
+  if (!waferFocus.value) return
+  waferFocus.value.style.top = posTop + 'px'
+  waferFocus.value.style.left = posLeft + 'px'
 }
 onMounted(() => {
-  waferGrid.value?.addEventListener('mousemove', setFocueMoveEvent, false)
+  waferAxisValues.value?.addEventListener('mousemove', setFocueMoveEvent, false)
   drawBackgroupd()
   drawFillRect()
-  drawGrid()
   drawFillText()
   drawAxisValues()
+  drawGrid()
 })
 
 onBeforeUnmount(() => {
-  waferGrid.value?.removeEventListener('mousemove', setFocueMoveEvent, false)
+  waferAxisValues.value?.removeEventListener('mousemove', setFocueMoveEvent, false)
 })
 </script>
 
@@ -447,7 +474,6 @@ onBeforeUnmount(() => {
   .vwp-focus {
     position: relative;
     overflow-x: hidden;
-    border: 2px solid blue;
   }
   .vwp-grid {
     position: absolute;
