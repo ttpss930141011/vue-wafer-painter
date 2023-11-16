@@ -38,11 +38,10 @@
         :style="axisValueStyle"
       ></canvas>
       <div ref="waferFocus" class="vwp-focus" :style="focusStyle"></div>
-      <div ref="focusPopper" :style="floatingStyles">
+      <div ref="focusTooltip" class="vwp-tooltip" :style="floatingStyles">
         <p>({{ onDieInfo.x }},{{ onDieInfo.y }})</p>
-        <p>Bin: {{ onDieInfo.bin }}</p>
-        <p>Site: {{ onDieInfo.site }}</p>
-        <div ref="popperArrow" data-popper-arrow></div>
+        <p>Info: {{ onDieInfo.info }}</p>
+        <p>Dut: {{ onDieInfo.dut }}</p>
       </div>
     </div>
   </div>
@@ -50,12 +49,11 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
 import type { Coords, WafermapProps } from './types'
-import { useFloating, offset } from '@floating-ui/vue'
+import { useFloating, flip, offset, shift } from '@floating-ui/vue'
 import _ from 'lodash'
 
 const waferFocus = ref<HTMLElement | null>(null)
-const focusPopper = ref<HTMLElement | null>(null)
-const popperArrow = ref<HTMLElement | null>(null)
+const focusTooltip = ref<HTMLElement | null>(null)
 const waferMapContainer = ref<HTMLElement | null>(null)
 const waferBg = ref<HTMLCanvasElement | null>(null)
 const waferMap = ref<HTMLCanvasElement | null>(null)
@@ -82,7 +80,7 @@ const mapInfo = reactive<WafermapProps>({
   enableDrawLine: true,
   scaleSize: 0.7,
   focusBorderColor: 'blue',
-  focusBorderWidth: 2
+  focusBorderWidth: 1
 })
 
 // 當 width 或 height 改變，waferBg.height 與 waferBg.width 也會跟著改變
@@ -131,8 +129,8 @@ const axisValueStyle = computed(() => ({
 const focusStyle = computed(() => ({
   height: `${dieHeight.value - mapInfo.focusBorderWidth}px`,
   width: `${dieWidth.value - mapInfo.focusBorderWidth}px`,
-  top: `${mapPaddingTop.value}px`,
-  left: `${mapPaddingLeft.value}px`,
+  top: `${mapPaddingTop.value + dieHeight.value}px`,
+  left: `${mapPaddingLeft.value + dieWidth.value}px`,
   border: `${mapInfo.focusBorderWidth}px solid ${mapInfo.focusBorderColor}`
 }))
 
@@ -173,16 +171,20 @@ const gridFontSize = computed(() => {
   return gridFontSize
 })
 
-const onDieInfo = reactive({
+const onDieInfo = reactive<{
+  x: number | null
+  y: number | null
+  dut: number | null
+  info: string | null
+}>({
   x: null,
   y: null,
-  bin: null,
-  site: null
+  dut: null,
+  info: null
 })
 
-const { floatingStyles } = useFloating(waferFocus, focusPopper, {
-  placement: 'right',
-  middleware: [offset(10)]
+const { floatingStyles, update: tooltipUpdate } = useFloating(waferFocus, focusTooltip, {
+  middleware: [offset(10), flip(), shift({ padding: 5 })]
 })
 
 /**
@@ -261,7 +263,6 @@ const drawGrid = () => {
   ctx.beginPath()
   ctx.strokeStyle = 'rgb(242,242,242)'
   ctx.lineWidth = 1
-
   ctx.font = `${gridFontSize.value}px Arial`
 
   //vertical line
@@ -303,36 +304,32 @@ const drawAxisValues = () => {
   ctx.lineWidth = 1
 
   ctx.font = `${gridFontSize.value}px Arial`
-  //vertical line
+  // horizontal line
   for (
     let x = minX.value + yAsixTextColCount;
     x <= maxX.value - minX.value + yAsixTextColCount;
     x++
   ) {
     const offsetWidth = (dieWidth.value - ctx.measureText(String(x - yAsixTextColCount)).width) / 2
-    const offsetHeight = (dieHeight.value - gridFontSize.value) / 2
 
     ctx.fillText(
       String(x - yAsixTextColCount),
       x * dieWidth.value + offsetWidth,
-      offsetHeight + dieHeight.value,
+      (gridFontSize.value + dieHeight.value) / 2,
       dieWidth.value
     )
   }
 
-  //horizontal line
+  // vertical line
   for (
     let y = minY.value + xAsixTextRowCount;
     y <= maxY.value - minY.value + xAsixTextRowCount;
     y++
   ) {
-    const offsetHeight = (dieHeight.value - gridFontSize.value) / 2
-
     ctx.fillText(
       String(y - xAsixTextRowCount),
       0,
-      (y + xAsixTextRowCount) * dieHeight.value + offsetHeight,
-      dieWidth.value
+      y * dieHeight.value + (gridFontSize.value + dieHeight.value) / 2
     )
   }
 }
@@ -348,7 +345,6 @@ const getDieTextInfo = (info: Coords['info']) => {
 
   let fontSize = dieWidth.value > dieHeight.value ? dieHeight.value * 0.5 : dieWidth.value * 0.5
   const longestString = info.reduce((a, b) => (a.length > b.length ? a : b), '')
-  console.log(fontSize)
   ctx.font = `${fontSize}px Arial`
 
   while (ctx.measureText(longestString).width > dieWidth.value) {
@@ -388,7 +384,6 @@ const drawFillText = () => {
     if (!dieTextInfo) return
     const { fontSize, offsetWidth, offsetHeight } = dieTextInfo
     ctx.font = `${fontSize}px Arial`
-    // console.log(fontSize)
     if (coord.info.length > 1) {
       //bin值1個以上需要斷行處理
       coord.info.forEach((info, index) => {
@@ -410,8 +405,12 @@ const drawFillText = () => {
   }
 }
 
-const onDieInfoEvent = (dieInfo: Coords, minX: number, minY: number) => {
-  console.log('onDieInfoEvent', dieInfo, minX, minY)
+const onDieInfoEvent = (dieInfo: Coords) => {
+  onDieInfo.x = dieInfo.x
+  onDieInfo.y = dieInfo.y
+  onDieInfo.info = dieInfo.info.map((item) => item).join(',')
+  onDieInfo.dut = dieInfo.dut
+  tooltipUpdate()
 }
 
 const getDieInfo = (dieX: number, dieY: number) => {
@@ -427,15 +426,15 @@ const setFocueMoveEvent = (e: MouseEvent) => {
 
   const dieInfo = getDieInfo(onDieX, onDieY)
 
-  if (!dieInfo) return
-  onDieInfoEvent(dieInfo, minX.value, minX.value)
+  if (!dieInfo || !waferFocus.value) return
 
   const posTop = (onDieY + xAsixTextRowCount) * dieHeight.value + mapPaddingTop.value
   const posLeft = (onDieX + yAsixTextColCount) * dieWidth.value + mapPaddingLeft.value
 
-  if (!waferFocus.value) return
   waferFocus.value.style.top = posTop + 'px'
   waferFocus.value.style.left = posLeft + 'px'
+
+  onDieInfoEvent(dieInfo)
 }
 onMounted(() => {
   waferAxisValues.value?.addEventListener('mousemove', setFocueMoveEvent, false)
@@ -459,29 +458,31 @@ onBeforeUnmount(() => {
     position: relative;
   }
 
-  .vwp-background {
+  .vwp-background,
+  .vwp-wafermap,
+  .vwp-waferinfo,
+  .vwp-grid,
+  .vwp-axis-values {
     position: absolute;
     overflow-x: hidden;
   }
-  .vwp-wafermap {
-    position: absolute;
-    overflow-x: hidden;
-  }
-  .vwp-waferinfo {
-    position: absolute;
-    overflow-x: hidden;
-  }
+
   .vwp-focus {
     position: relative;
     overflow-x: hidden;
   }
-  .vwp-grid {
+
+  .vwp-tooltip {
+    font-family: Arial, Helvetica, sans-serif;
+    width: max-content;
     position: absolute;
-    overflow-x: hidden;
-  }
-  .vwp-axis-values {
-    position: absolute;
-    overflow-x: hidden;
+    top: 0;
+    left: 0;
+    background: #ffecbe;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 4px;
   }
 }
 </style>

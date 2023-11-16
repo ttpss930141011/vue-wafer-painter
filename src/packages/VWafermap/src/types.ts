@@ -2,6 +2,7 @@ export interface Coords {
   info: Array<string>
   x: number
   y: number
+  dut: number
   color: string
 }
 
