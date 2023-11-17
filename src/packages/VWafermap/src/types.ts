@@ -7,6 +7,7 @@ export interface Coords {
 }
 
 export interface WafermapProps {
+  coords: Coords[]
   width: number
   height: number
   grid: 'On' | 'Off'
