@@ -1,2 +1,2 @@
-import VWafermap from './src/VWafermap.vue'
+import VWafermap from './src/wafermap.vue'
 export default VWafermap
