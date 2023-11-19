@@ -10,8 +10,8 @@ const meta = {
   // This component will have an automatically generated docsPage entry: https://storybook.js.org/docs/vue/writing-docs/autodocs
   tags: ['autodocs'],
   args: {
-    width: 500,
-    height: 500,
+    width: 600,
+    height: 600,
     coords: coords,
     notch: 'top',
     scaleSize: 0.7,
