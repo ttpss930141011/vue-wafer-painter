@@ -1,14 +1,13 @@
 import _ from 'lodash'
-import { onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { onBeforeUnmount, onMounted, reactive, ref, watch, computed } from 'vue'
 import { useFloating, flip, offset, shift } from '@floating-ui/vue'
 import { canvasLineSpace, xAsixTextRowCount, yAsixTextColCount } from './constants'
 import { useMapinfo } from './use-mapinfo'
 import { useWafermapStyle } from './wafermap-style'
-import type { SetupContext } from 'vue'
 import type { WafermapEmits, WafermapProps } from './wafermap'
 import type { Coords, OnDieInfo } from './types'
 
-export const useWafer = (props: WafermapProps, emit: SetupContext<WafermapEmits>['emit']) => {
+export const useWafer = (props: WafermapProps, emit: WafermapEmits) => {
   const waferFocus = ref<HTMLElement>()
   const focusTooltip = ref<HTMLElement>()
   const waferMapContainer = ref<HTMLElement>()
@@ -18,20 +17,31 @@ export const useWafer = (props: WafermapProps, emit: SetupContext<WafermapEmits>
   const waferGrid = ref<HTMLCanvasElement>()
   const waferAxisValues = ref<HTMLCanvasElement>()
 
-  const onDieInfo = reactive<OnDieInfo>({
+  const initialOnDieInfo = {
     x: undefined,
     y: undefined,
     dut: undefined,
     info: undefined
-  })
+  }
 
-  const onDieInfoEvent = _.throttle((dieInfo: Coords) => {
+  const onDieInfo = reactive<OnDieInfo>({ ...initialOnDieInfo })
+
+  const updateDieInfoOnTooltip = _.throttle((dieInfo: Coords) => {
     onDieInfo.x = dieInfo.x
     onDieInfo.y = dieInfo.y
     onDieInfo.info = dieInfo.info.map((item) => item).join(',')
     onDieInfo.dut = dieInfo.dut
     tooltipUpdate()
   }, 60)
+
+  const updateFocusPosition = (onDieX: number, onDieY: number) => {
+    if (!waferFocus.value) return
+    const posLeft =
+      (onDieX - minX.value + yAsixTextColCount) * dieWidth.value + mapPaddingLeft.value
+    const posTop = (onDieY - minY.value + xAsixTextRowCount) * dieHeight.value + mapPaddingTop.value
+    waferFocus.value.style.top = posTop + 'px'
+    waferFocus.value.style.left = posLeft + 'px'
+  }
 
   const {
     dieWidth,
@@ -45,17 +55,53 @@ export const useWafer = (props: WafermapProps, emit: SetupContext<WafermapEmits>
     mapPaddingTop
   } = useMapinfo(props)
 
-  const { bgStyle, mapStyle, infoStyle, gridStyle, axisValueStyle, focusStyle } =
+  const { containerStyle, bgStyle, mapStyle, infoStyle, gridStyle, axisValueStyle, _focusStyle } =
     useWafermapStyle(props)
 
+  const focusStyle = computed(() => ({
+    ..._focusStyle.value,
+    border: props.showFocus ? _focusStyle.value.border : 'transparent',
+    display: onDieInfo.x !== undefined && onDieInfo.y !== undefined ? 'block' : 'none'
+  }))
+
   // The third part library floating-ui is used to implement the floating tooltip.
-  const { floatingStyles: tooltipStyle, update: tooltipUpdate } = useFloating(
-    waferFocus,
-    focusTooltip,
-    {
-      middleware: [offset(10), flip(), shift({ padding: 5 })]
-    }
-  )
+  const { floatingStyles, update: tooltipUpdate } = useFloating(waferFocus, focusTooltip, {
+    middleware: [offset(10), flip(), shift({ padding: 5 })]
+  })
+
+  const tooltipStyle = computed(() => ({
+    ...floatingStyles.value,
+    display:
+      onDieInfo.x !== undefined && onDieInfo.y !== undefined && props.showTooltip ? 'block' : 'none'
+  }))
+
+  const _resetOnDieInfo = () => Object.assign(onDieInfo, initialOnDieInfo)
+
+  const _resetAllCanvas = () => {
+    if (
+      !waferBg.value ||
+      !waferMap.value ||
+      !waferInfo.value ||
+      !waferGrid.value ||
+      !waferAxisValues.value
+    )
+      return
+
+    const ctxBg = waferBg.value.getContext('2d')
+    const ctxMap = waferMap.value.getContext('2d')
+    const ctxInfo = waferInfo.value.getContext('2d')
+    const ctxGrid = waferGrid.value.getContext('2d')
+    const ctxAxisValues = waferAxisValues.value.getContext('2d')
+
+    if (!ctxBg || !ctxMap || !ctxInfo || !ctxGrid || !ctxAxisValues) return
+
+    ctxBg.clearRect(0, 0, props.width, props.height)
+    ctxMap.clearRect(0, 0, props.width, props.height)
+    ctxInfo.clearRect(0, 0, props.width, props.height)
+    ctxGrid.clearRect(0, 0, props.width, props.height)
+    ctxAxisValues.clearRect(0, 0, props.width, props.height)
+  }
+
   /**
    * Retrieves information about a die based on its coordinates.
    *
@@ -77,14 +123,9 @@ export const useWafer = (props: WafermapProps, emit: SetupContext<WafermapEmits>
     const dieInfo = _getDieInfo(onDieX, onDieY)
     if (!dieInfo || !waferFocus.value) return
 
-    const posLeft =
-      (onDieX - minX.value + yAsixTextColCount) * dieWidth.value + mapPaddingLeft.value
-    const posTop = (onDieY - minY.value + xAsixTextRowCount) * dieHeight.value + mapPaddingTop.value
-    waferFocus.value.style.top = posTop + 'px'
-    waferFocus.value.style.left = posLeft + 'px'
-
-    if (props.showFocusTooltip === true) onDieInfoEvent(dieInfo)
-    emit('onDie', e)
+    updateFocusPosition(onDieX, onDieY)
+    updateDieInfoOnTooltip(dieInfo)
+    emit('onDie', e, dieInfo)
   }
 
   /**
@@ -97,7 +138,6 @@ export const useWafer = (props: WafermapProps, emit: SetupContext<WafermapEmits>
 
     const ctx = waferBg.value.getContext('2d')
     if (!ctx) return
-
     const centX = props.width / 2 //center X
     const centY = props.height / 2 //center Y
     const notchScale = 0.1
@@ -106,7 +146,6 @@ export const useWafer = (props: WafermapProps, emit: SetupContext<WafermapEmits>
     let notchWidth = 0
     let notchHeight = 0
 
-    ctx.clearRect(0, 0, props.width, props.height)
     ctx.fillStyle = '#C0C0C0'
     ctx.beginPath()
     ctx.arc(centX, centY, centY, 0, 2 * Math.PI)
@@ -153,8 +192,6 @@ export const useWafer = (props: WafermapProps, emit: SetupContext<WafermapEmits>
     const ctx = waferMap.value.getContext('2d')
     if (!ctx) return
 
-    ctx.clearRect(0, 0, props.width, props.height)
-
     for (const coord of props.coords) {
       ctx.fillStyle = coord.color
       ctx.fillRect(
@@ -172,12 +209,11 @@ export const useWafer = (props: WafermapProps, emit: SetupContext<WafermapEmits>
    * @return {void} No return value.
    */
   const drawGrid = () => {
-    if (!waferGrid.value) return
+    if (!waferGrid.value || !props.showGrid) return
 
     const ctx = waferGrid.value.getContext('2d')
     if (!ctx) return
 
-    ctx.clearRect(0, 0, props.width, props.height)
     ctx.beginPath()
     ctx.strokeStyle = 'rgb(242,242,242)'
     ctx.lineWidth = 1
@@ -206,12 +242,11 @@ export const useWafer = (props: WafermapProps, emit: SetupContext<WafermapEmits>
    * @return {void}
    */
   const drawAxisValues = () => {
-    if (!waferAxisValues.value) return
+    if (!waferAxisValues.value || !props.showAxisValues) return
 
     const ctx = waferAxisValues.value.getContext('2d')
     if (!ctx) return
 
-    ctx.clearRect(0, 0, props.width, props.height)
     ctx.beginPath()
     ctx.strokeStyle = 'rgb(242,242,242)'
     ctx.lineWidth = 1
@@ -291,8 +326,11 @@ export const useWafer = (props: WafermapProps, emit: SetupContext<WafermapEmits>
    * @return {void}
    */
   const drawFillText = () => {
-    const ctx = waferInfo.value?.getContext('2d')
+    if (!waferInfo.value || !props.showDieInfo) return
+
+    const ctx = waferInfo.value.getContext('2d')
     if (!ctx) return
+
     ctx.fillStyle = 'black'
 
     for (const coord of props.coords) {
@@ -324,24 +362,33 @@ export const useWafer = (props: WafermapProps, emit: SetupContext<WafermapEmits>
       }
     }
   }
-
-  onMounted(() => {
-    if (!waferMap.value) return
-    waferMap.value.addEventListener('mousemove', handleFocusEvent, false)
+  const draw = _.debounce(() => {
+    _resetOnDieInfo()
+    _resetAllCanvas()
     drawBackgroupd()
     drawFillRect()
     drawFillText()
     drawAxisValues()
     drawGrid()
+  }, 30)
+
+  watch(
+    () => props,
+    () => draw(),
+    { deep: true, immediate: true }
+  )
+
+  onMounted(() => {
+    waferMap.value?.addEventListener('mousemove', handleFocusEvent, false)
   })
 
   onBeforeUnmount(() => {
-    if (!waferMap.value) return
-    waferMap.value.removeEventListener('mousemove', handleFocusEvent, false)
+    waferMap.value?.removeEventListener('mousemove', handleFocusEvent, false)
   })
 
   return {
     _style: {
+      containerStyle,
       bgStyle,
       mapStyle,
       infoStyle,

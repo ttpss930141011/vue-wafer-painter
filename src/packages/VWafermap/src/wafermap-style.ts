@@ -6,6 +6,11 @@ import { useMapinfo } from './use-mapinfo'
 export function useWafermapStyle(props: WafermapProps) {
   const { dieWidth, dieHeight, mapPaddingLeft, mapPaddingTop } = useMapinfo(props)
 
+  const containerStyle = computed(() => ({
+    height: `${props.height}px`,
+    width: `${props.width}px`
+  }))
+
   const bgStyle = computed(() => ({
     height: `${props.height}px`,
     width: `${props.width}px`
@@ -47,18 +52,19 @@ export function useWafermapStyle(props: WafermapProps) {
     paddingLeft: `${mapPaddingLeft.value}px`
   }))
 
-  const focusStyle = computed(() => ({
+  const _focusStyle = computed(() => ({
     height: `${dieHeight.value - props.focusBorderWidth}px`,
     width: `${dieWidth.value - props.focusBorderWidth}px`,
     border: `${props.focusBorderWidth}px solid ${props.focusBorderColor}`
   }))
 
   return {
+    containerStyle,
     bgStyle,
     mapStyle,
     infoStyle,
     gridStyle,
     axisValueStyle,
-    focusStyle
+    _focusStyle
   }
 }

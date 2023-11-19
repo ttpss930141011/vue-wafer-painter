@@ -1,5 +1,5 @@
 <template>
-  <div ref="waferMapContainer" class="vwp-container">
+  <div ref="waferMapContainer" class="vwp-container" :style="containerStyle">
     <canvas
       ref="waferBg"
       class="vwp-background"
@@ -23,7 +23,6 @@
       :style="infoStyle"
     ></canvas>
     <canvas
-      v-if="props.grid === true"
       ref="waferGrid"
       class="vwp-grid"
       :width="props.width * props.scaleSize + canvasLineSpace"
@@ -31,7 +30,6 @@
       :style="gridStyle"
     ></canvas>
     <canvas
-      v-if="props.showAxisValues === true"
       ref="waferAxisValues"
       class="vwp-axis-values"
       :width="props.width * props.scaleSize + canvasLineSpace"
@@ -39,14 +37,7 @@
       :style="axisValueStyle"
     ></canvas>
     <div ref="waferFocus" class="vwp-focus" :style="focusStyle"></div>
-    <div
-      v-if="
-        onDieInfo.x !== undefined && onDieInfo.y !== undefined && props.showFocusTooltip === true
-      "
-      ref="focusTooltip"
-      class="vwp-tooltip"
-      :style="tooltipStyle"
-    >
+    <div ref="focusTooltip" class="vwp-tooltip" :style="tooltipStyle">
       <p>({{ onDieInfo.x }},{{ onDieInfo.y }})</p>
       <p>Info: {{ onDieInfo.info }}</p>
       <p>Dut: {{ onDieInfo.dut }}</p>
@@ -54,7 +45,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { WafermapProps } from './wafermap'
+import type { WafermapEmits, WafermapProps } from './wafermap'
 import { canvasLineSpace } from './constants'
 import { useWafer } from './use-wafermap'
 
@@ -62,16 +53,18 @@ const props = withDefaults(defineProps<WafermapProps>(), {
   coords: () => [],
   width: 500,
   height: 500,
-  grid: true,
   notch: 'top',
-  showFocusTooltip: true,
+  showGrid: true,
+  showFocus: true,
+  showTooltip: true,
   showAxisValues: true,
+  showDieInfo: true,
   scaleSize: 0.7,
   focusBorderColor: 'blue',
   focusBorderWidth: 1
 })
 
-const emit = defineEmits(['onDie'])
+const emit = defineEmits<WafermapEmits>()
 
 const { _ref, _style, _data } = useWafer(props, emit)
 
@@ -88,7 +81,16 @@ const {
   focusTooltip
 } = _ref
 
-const { bgStyle, mapStyle, infoStyle, gridStyle, axisValueStyle, focusStyle, tooltipStyle } = _style
+const {
+  containerStyle,
+  bgStyle,
+  mapStyle,
+  infoStyle,
+  gridStyle,
+  axisValueStyle,
+  focusStyle,
+  tooltipStyle
+} = _style
 
 defineExpose({
   /** @description  The current wafermap props */
@@ -100,8 +102,6 @@ defineExpose({
 
 <style scoped>
 .vwp-container {
-  width: fit-content;
-  height: fit-content;
   position: relative;
 
   .vwp-background,
