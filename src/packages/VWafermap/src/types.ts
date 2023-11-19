@@ -6,14 +6,9 @@ export interface Coords {
   color: string
 }
 
-export interface WafermapProps {
-  coords: Coords[]
-  width: number
-  height: number
-  grid: 'On' | 'Off'
-  notch: 'Top' | 'Bottom' | 'Left' | 'Right'
-  enableDrawLine: boolean
-  scaleSize: number
-  focusBorderColor: string
-  focusBorderWidth: number
+export interface OnDieInfo {
+  x: number | undefined
+  y: number | undefined
+  dut: number | undefined
+  info: string | undefined
 }
