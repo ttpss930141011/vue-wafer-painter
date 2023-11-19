@@ -3,12 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>email input example</title>
+    <title>v-wafermap</title>
     <link rel="stylesheet" href="../dist/main.css" />
   </head>
   <body>
     <div id="app">
-      <v-wafermap :coords="coords" />
+      <input type="range" name="width" id="map-width" min="100" max="1000" v-model="width" />
+      <!-- checkbox -->
+      <div>
+        <input type="checkbox" name="show-grid" id="show-grid" v-model="showGrid" />
+        <label for="show-grid">show grid</label>
+        <div>
+          <!-- add random coord -->
+          <button
+            @click="coords.push({ x: Math.floor(Math.random() * 25), y: Math.floor(Math.random() * 25), color: colorlist[Math.floor(Math.random() * 7)], info: [Math.floor(Math.random() * 50)], dut: Math.floor(Math.random() * 50) })"
+          >
+            add random coord
+          </button>
+          <!-- remove random coord -->
+          <button @click="coords.pop()">remove random coord</button>
+        </div>
+        <v-wafermap
+          :show-grid="showGrid"
+          :coords="coords"
+          :width="width"
+          :height="width"
+          @on-die="onDie"
+        />
+      </div>
     </div>
     <script type="importmap">
       {
@@ -26,6 +48,12 @@
           VWafermap
         },
         setup() {
+          const colorlist = ['red', 'green', 'blue', 'white', 'black', 'yellow', 'pink', 'purple']
+          const width = ref(600)
+          const showGrid = ref(true)
+          const onDie = (event, coord) => {
+            console.log(event, coord)
+          }
           const coords = ref([
             // {
             //   info: ['1'],
@@ -107,7 +135,11 @@
             }
           ])
           return {
-            coords
+            coords,
+            colorlist,
+            width,
+            showGrid,
+            onDie
           }
         }
       }).mount('#app')
