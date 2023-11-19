@@ -1,52 +1,96 @@
 # vue-wafer-painter
 
-This template should help get you started developing with Vue 3 in Vite.
+The wafer component library based on Vue 3 provides a versatile and customizable solution for visualizing wafermaps, commonly used in semiconductor manufacturing.
 
-## Recommended IDE Setup
+## Features
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+- Scalable Canvas: The component utilizes HTML5 canvas elements for rendering, allowing for efficient and scalable display of wafer maps.
+- Customization Options: Users can customize various aspects of the wafer map, including dimensions, grid visibility, notch position, and more.
+- Interactive Focus: The component includes an interactive focus feature, where users can hover over individual dies to view detailed information.
+- Tooltips: Informative tooltips appear when hovering over dies, displaying coordinates, die information, and DUT (Device Under Test) details.
+- Axis Values: Optionally, axis values can be displayed on the wafer map, aiding in orientation and die identification.
 
-## Type Support for `.vue` Imports in TS
+## Installation
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+To use this wafermap component, follow these steps:
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+1. Install the package using your preferred package manager:
 
-1. Disable the built-in TypeScript Extension
-   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+   ```bash
+   npm install vue-wafer-painter
+   ```
 
-## Customize configuration
+2. Import the component into your Vue application:
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+   ```javascript
+   import VWafermap from 'vue-wafer-painter'
+   ```
 
-## Project Setup
+3. Add the VWafermap component to your template:
 
-```sh
-pnpm install
+   ```html
+   <template>
+     <v-wafermap :width="800" :height="800" />
+   </template>
+   ```
+
+## Usage
+
+Here's a simple example of using the VWafermap component:
+
+```html
+<template>
+  <v-wafermap
+    :width="800"
+    :height="800"
+    :showGrid="true"
+    :notch="'top'"
+    :showTooltip="true"
+    :showFocus="true"
+    :showAxisValues="true"
+    :showDieInfo="true"
+    :scaleSize="0.7"
+    :focusBorderColor="'blue'"
+    :focusBorderWidth="1"
+    @onDie="handleDieHover"
+  />
+</template>
+
+<script>
+  import VWafermap from 'vue-wafer-painter'
+
+  export default {
+    components: {
+      VWafermap
+    },
+    methods: {
+      handleDieHover(event, dieInfo) {
+        // Handle the click on a die
+        console.log('Hovered on die:', dieInfo)
+      }
+    }
+  }
+</script>
 ```
 
-### Compile and Hot-Reload for Development
+## Props
 
-```sh
-pnpm dev
-```
+- **width** (_Number_): The width of the wafer map.
+- **height** (_Number_): The height of the wafer map.
+- **showGrid** (_Boolean_): Whether to display grid lines on the wafer map.
+- **notch** (_String_): The position of the wafer's notch ('top', 'bottom', 'left', 'right').
+- **showTooltip** (_Boolean_): Whether to show tooltips on hover.
+- **showFocus** (_Boolean_): Whether to show the focus border on hover.
+- **showAxisValues** (_Boolean_): Whether to display axis values.
+- **showDieInfo** (_Boolean_): Whether to display die information in the tooltip.
+- **scaleSize** (_Number_): The scale factor for the wafer map.
+- **focusBorderColor** (_String_): The color of the focus border.
+- **focusBorderWidth** (_Number_): The width of the focus border.
 
-### Type-Check, Compile and Minify for Production
+## Events
 
-```sh
-pnpm build
-```
+- **onDie** (_Function_): Event emitted when a die is clicked. Provides information about the clicked die.
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
+## License
 
-```sh
-pnpm test:unit
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-pnpm lint
-```
+MIT

@@ -26,8 +26,8 @@ export const RightArrow = () => (
 
     <div className="sb-container">
           <div className='sb-section-title'>
-                    # vue-wafer-painter
-    The Wafermap Vue component is a powerful tool designed to facilitate the visualization of wafer maps. It provides a flexible and customizable solution for rendering wafermaps with features such as grid lines, axis values, and tooltips on individual dies.
+                          # vue-wafer-painter
+    The wafer component library based on Vue 3 provides a versatile and customizable solution for visualizing wafermaps, commonly used in semiconductor manufacturing.
           </div>
              ## Features
     - Scalable Canvas: The component utilizes HTML5 canvas elements for rendering, allowing for efficient and scalable display of wafer maps.
@@ -43,30 +43,30 @@ To use this wafermap component, follow these steps:
 1. Install the package using your preferred package manager:
 
    ```bash
-   npm install your-wafermap-package
+   npm install vue-wafer-painter
    ```
 
 2. Import the component into your Vue application:
 
    ```javascript
-   import Wafermap from 'your-wafermap-package'
+   import VWafermap from 'vue-wafer-painter'
    ```
 
-3. Add the Wafermap component to your template:
+3. Add the VWafermap component to your template:
 
    ```html
    <template>
-     <Wafermap :width="800" :height="800" />
+     <v-wafermap :width="800" :height="800" />
    </template>
    ```
 
 ## Usage
 
-Here's a simple example of using the Wafermap component:
+Here's a simple example of using the VWafermap component:
 
 ```html
 <template>
-  <Wafermap
+  <v-wafermap
     :width="800"
     :height="800"
     :showGrid="true"
@@ -78,21 +78,21 @@ Here's a simple example of using the Wafermap component:
     :scaleSize="0.7"
     :focusBorderColor="'blue'"
     :focusBorderWidth="1"
-    @onDie="handleDieClick"
+    @onDie="handleDieHover"
   />
 </template>
 
 <script>
-  import Wafermap from 'your-wafermap-package'
+  import VWafermap from 'vue-wafer-painter'
 
   export default {
     components: {
-      Wafermap
+      VWafermap
     },
     methods: {
-      handleDieClick(dieInfo) {
+      handleDieHover(event, dieInfo) {
         // Handle the click on a die
-        console.log('Clicked on die:', dieInfo)
+        console.log('Hovered on die:', dieInfo)
       }
     }
   }
@@ -140,7 +140,7 @@ MIT
     <div className="sb-section-item">
             <img src={Gmail} alt="Gmail logo" className="sb-explore-image" />
       <div>
-                                Get support and chat with frontend developers.
+                                      Get support and chat with frontend developers.
 
         <a
                     href="mailto:o927416847@gmail.com"
@@ -151,7 +151,7 @@ MIT
     <div className="sb-section-item">
             <img src={Orange} alt="Orange logo" className="sb-explore-image" />
       <div>
-                                More articals about my life and work.
+                                      More articals about my life and work.
 
         <a
                     href="https://blog.justinxiao.app/"
