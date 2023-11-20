@@ -3,6 +3,7 @@ import { Meta } from '@storybook/blocks'
 import Github from './assets/github.svg'
 import Gmail from './assets/gmail.svg'
 import Orange from './assets/orange.svg'
+import Logo from './assets/logo.svg'
 
 export const RightArrow = () => (
   <svg
@@ -26,17 +27,20 @@ export const RightArrow = () => (
 
     <div className="sb-container">
           <div className='sb-section-title'>
-                          # vue-wafer-painter
+          <img src={Logo} width="100" />
+          <h1 align="center"> vue-wafer-painter </h1>
     The wafer component library based on Vue 3 provides a versatile and customizable solution for visualizing wafermaps, commonly used in semiconductor manufacturing.
-          </div>
-             ## Features
-    - Scalable Canvas: The component utilizes HTML5 canvas elements for rendering, allowing for efficient and scalable display of wafer maps.
-    - Customization Options: Users can customize various aspects of the wafer map, including dimensions, grid visibility, notch position, and more.
-    - Interactive Focus: The component includes an interactive focus feature, where users can hover over individual dies to view detailed information.
-    - Tooltips: Informative tooltips appear when hovering over dies, displaying coordinates, die information, and DUT (Device Under Test) details.
-    - Axis Values: Optionally, axis values can be displayed on the wafer map, aiding in orientation and die identification.
+          </div></div>
 
-## Installation
+## ⚙️ Features
+
+- Scalable Canvas: The component utilizes HTML5 canvas elements for rendering, allowing for efficient and scalable display of wafer maps.
+- Customization Options: Users can customize various aspects of the wafer map, including dimensions, grid visibility, notch position, and more.
+- Interactive Focus: The component includes an interactive focus feature, where users can hover over individual dies to view detailed information.
+
+## 🚀 Getting Started
+
+### Installation
 
 To use this wafermap component, follow these steps:
 
@@ -56,76 +60,15 @@ To use this wafermap component, follow these steps:
 
    ```html
    <template>
-     <v-wafermap :width="800" :height="800" />
+     <v-wafermap :width="800" :height="800" :coords="[{...your coords}]" />
    </template>
    ```
 
-## Usage
+## 📄 License
 
-Here's a simple example of using the VWafermap component:
+This project is licensed under the MIT License. See the [LICENSE](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/adding-a-license-to-a-repository) file for additional info.
 
-```html
-<template>
-  <v-wafermap
-    :width="800"
-    :height="800"
-    :showGrid="true"
-    :notch="'top'"
-    :showTooltip="true"
-    :showFocus="true"
-    :showAxisValues="true"
-    :showDieInfo="true"
-    :scaleSize="0.7"
-    :focusBorderColor="'blue'"
-    :focusBorderWidth="1"
-    @onDie="handleDieHover"
-  />
-</template>
-
-<script>
-  import VWafermap from 'vue-wafer-painter'
-
-  export default {
-    components: {
-      VWafermap
-    },
-    methods: {
-      handleDieHover(event, dieInfo) {
-        // Handle the click on a die
-        console.log('Hovered on die:', dieInfo)
-      }
-    }
-  }
-</script>
-```
-
-## Props
-
-- **width** (_Number_): The width of the wafer map.
-- **height** (_Number_): The height of the wafer map.
-- **showGrid** (_Boolean_): Whether to display grid lines on the wafer map.
-- **notch** (_String_): The position of the wafer's notch ('top', 'bottom', 'left', 'right').
-- **showTooltip** (_Boolean_): Whether to show tooltips on hover.
-- **showFocus** (_Boolean_): Whether to show the focus border on hover.
-- **showAxisValues** (_Boolean_): Whether to display axis values.
-- **showDieInfo** (_Boolean_): Whether to display die information in the tooltip.
-- **scaleSize** (_Number_): The scale factor for the wafer map.
-- **focusBorderColor** (_String_): The color of the focus border.
-- **focusBorderWidth** (_Number_): The width of the focus border.
-
-## Events
-
-- **onDie** (_Function_): Event emitted when a die is clicked. Provides information about the clicked die.
-
-## License
-
-MIT
-
-    </div>
-
-
-
-
+---
 
     <div className="sb-section sb-socials">
           <div className="sb-section-item">
@@ -183,6 +126,10 @@ object-fit: cover;
 
 .sb-section-title {
 margin-bottom: 32px;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
 }
 
 .sb-section a:not(h1 a, h2 a, h3 a) {
@@ -321,4 +268,5 @@ flex-direction: column;
 
 }
 `}
+
 </style>

@@ -5,7 +5,7 @@ import { coords } from './constants'
 
 // More on how to set up stories at: https://storybook.js.org/docs/vue/writing-stories/introduction
 const meta = {
-  title: 'Example/VWafermap',
+  title: 'Components/VWafermap',
   component: VWafermap,
   // This component will have an automatically generated docsPage entry: https://storybook.js.org/docs/vue/writing-docs/autodocs
   tags: ['autodocs'],

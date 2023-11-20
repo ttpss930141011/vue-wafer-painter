@@ -16,7 +16,7 @@
         <div>
           <!-- add random coord -->
           <button
-            @click="coords.push({ x: Math.floor(Math.random() * 25), y: Math.floor(Math.random() * 25), color: colorlist[Math.floor(Math.random() * 7)], info: [Math.floor(Math.random() * 50)], dut: Math.floor(Math.random() * 50) })"
+            @click="coords.push({ x: Math.floor(Math.random() * 25), y: Math.floor(Math.random() * 25), color: colorlist[0], info: [Math.floor(Math.random() * 50)], dut: Math.floor(Math.random() * 50) })"
           >
             add random coord
           </button>
@@ -24,10 +24,14 @@
           <button @click="coords.pop()">remove random coord</button>
         </div>
         <v-wafermap
-          :show-grid="showGrid"
+          :show-grid="true"
           :coords="coords"
           :width="width"
           :height="width"
+          :show-axis-values="false"
+          background-color="#f38f0b"
+          notch="bottom"
+          dieinfo-color="#f5d98a"
           @on-die="onDie"
         />
       </div>
@@ -48,7 +52,16 @@
           VWafermap
         },
         setup() {
-          const colorlist = ['red', 'green', 'blue', 'white', 'black', 'yellow', 'pink', 'purple']
+          const colorlist = [
+            '#ed742f',
+            'green',
+            'blue',
+            'white',
+            'black',
+            'yellow',
+            'pink',
+            'purple'
+          ]
           const width = ref(600)
           const showGrid = ref(true)
           const onDie = (event, coord) => {
@@ -57,82 +70,53 @@
           const coords = ref([
             // {
             //   info: ['1'],
+            //   x: -2,
+            //   y: -2,
+            //   dut: 1,
+            //   color: '#ff8080'
+            // }
+            // {
+            //   info: ['2'],
             //   x: 0,
+            //   y: 1,
+            //   dut: 2,
+            //   color: 'green'
+            // },
+            // {
+            //   info: ['4'],
+            //   x: 1,
+            //   y: 0,
+            //   dut: 1,
+            //   color: 'rgb(0, 102, 204)'
+            // },
+            // {
+            //   info: ['6'],
+            //   x: 1,
+            //   y: 2,
+            //   dut: 3,
+            //   color: 'blue'
+            // },
+            // {
+            //   info: ['7', '789'],
+            //   x: 2,
             //   y: 0,
             //   dut: 1,
             //   color: 'red'
             // },
-            {
-              info: ['2'],
-              x: 0,
-              y: 1,
-              dut: 2,
-              color: 'green'
-            },
-            {
-              info: ['3'],
-              x: 0,
-              y: 2,
-              dut: 3,
-
-              color: 'blue'
-            },
-            {
-              info: ['4'],
-              x: 1,
-              y: 0,
-              dut: 1,
-
-              color: 'red'
-            },
-            {
-              info: ['5'],
-              x: 1,
-              y: 1,
-              dut: 2,
-              color: 'green'
-            },
-            {
-              info: ['6'],
-              x: 1,
-              y: 2,
-              dut: 3,
-              color: 'blue'
-            },
-            {
-              info: ['7'],
-              x: 2,
-              y: 0,
-              dut: 1,
-              color: 'red'
-            },
-            {
-              info: ['118', '123', '4564'],
-              x: 2,
-              y: 1,
-              dut: 2,
-              color: 'green'
-            },
-            {
-              info: ['9'],
-              x: 2,
-              y: 2,
-              dut: 3,
-              color: 'blue'
-            },
             // {
-            //   info: ['10'],
-            //   x: 20,
-            //   y: 20,
-            //   color: 'blue'
+            //   info: ['118', '123', '4564'],
+            //   x: 2,
+            //   y: 1,
+            //   dut: 2,
+            //   color: 'green'
+            // },
+            // {
+            //   info: ['9'],
+            //   x: 2,
+            //   y: 2,
+            //   dut: 3,
+            //   color: '#b800e6'
             // }
-            {
-              info: ['11'],
-              x: -10,
-              y: -2,
-              dut: 3,
-              color: 'white'
-            }
           ])
           return {
             coords,

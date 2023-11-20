@@ -15,9 +15,10 @@
     "knip": "knip --no-exit-code",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
-    "storybook": "storybook 6006 -s public",
+    "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build -s public",
-    "serve-storybook": "serve storybook-static"
+    "serve-storybook": "serve storybook-static",
+    "publish-storybook": "vercel --prod"
   },
   "dependencies": {
     "@floating-ui/vue": "1.0.2",
@@ -29,6 +30,7 @@
     "@actions/github": "6.0.0",
     "@octokit/core": "5.0.1",
     "@rushstack/eslint-patch": "1.5.1",
+    "@storybook/addon-docs": "^7.5.3",
     "@storybook/addon-essentials": "7.5.3",
     "@storybook/addon-interactions": "7.5.3",
     "@storybook/addon-links": "7.5.3",
@@ -58,6 +60,7 @@
     "prettier": "3.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "remark-gfm": "3.0.1",
     "sass": "1.69.5",
     "shell-quote": "1.8.1",
     "start-server-and-test": "2.0.3",
