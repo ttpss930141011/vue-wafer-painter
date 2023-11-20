@@ -50,12 +50,6 @@ The wafer component library based on Vue 3 provides a versatile and customizable
     npm run storybook
    ```
 
-## ⚙️ Features
-
-- Scalable Canvas: The component utilizes HTML5 canvas elements for rendering, allowing for efficient and scalable display of wafer maps.
-- Customization Options: Users can customize various aspects of the wafer map, including dimensions, grid visibility, notch position, and more.
-- Interactive Focus: The component includes an interactive focus feature, where users can hover over individual dies to view detailed information.
-
 ## 🚀 Getting Started
 
 ### Installation
@@ -86,7 +80,7 @@ To use this wafermap component, follow these steps:
 
 <details closed><summary>VWafermap</summary>
 
-Here's a simple example of Coords data:
+Here's a example of Coords data:
 
 ```javascript
 //src\packages\VWafermap\src\types.ts
@@ -100,43 +94,12 @@ export interface Coords {
 }
 
 const coords = [
-  {
-    info: ['1'],
-    x: -2,
-    y: -2,
-    dut: 1,
-    color: '#ff8080'
-  },
-  {
-    info: ['2'],
-    x: 0,
-    y: 1,
-    dut: 2,
-    color: 'green'
-  },
-  {
-    info: ['4'],
-    x: 1,
-    y: 0,
-    dut: 1,
-    color: 'rgb(0, 102, 204)'
-  },
-  {
-    info: ['7', '789'],
-    x: 2,
-    y: 0,
-    dut: 1,
-    color: 'red'
-  },
-  {
-    info: ['9'],
-    x: 2,
-    y: 2,
-    dut: 3,
-    color: '#b800e6'
-  }
+  { x: -2, y: -2, info: ['1'], dut: 1, color: '#ff8080' },
+  { x: 0, y: 1, info: ['2'], dut: 2, color: 'green' },
+  { x: 1, y: 0, info: ['4'], dut: 1, color: 'rgb(0, 102, 204)' }
+  { x: 2, y: 0, info: ['7', '789'], dut: 1, color: 'red' },
+  { x: 2, y: 2, info: ['9'], dut: 3, color: '#b800e6' }
 ]
-
 
 ```
 
