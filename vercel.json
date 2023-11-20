@@ -1,4 +1,9 @@
 {
+  "version": 2,
+  "public": false,
+  "github": {
+    "enabled": false
+  },
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build-storybook",
   "devCommand": "npm run storybook",
