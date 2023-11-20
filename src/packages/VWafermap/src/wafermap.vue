@@ -108,21 +108,24 @@ defineExpose({
 <style scoped>
 .vwp-container {
   position: relative;
+  display: inline-block;
 
   .vwp-background,
   .vwp-waferinfo,
   .vwp-grid,
   .vwp-axis-values {
+    display: block;
     position: absolute;
     overflow-x: hidden;
     pointer-events: none;
   }
   .vwp-wafermap {
+    display: block;
     position: absolute;
     overflow-x: hidden;
   }
   .vwp-focus {
-    position: relative;
+    position: absolute;
     overflow-x: hidden;
     top: 0;
     left: 0;

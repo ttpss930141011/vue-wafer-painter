@@ -3,7 +3,7 @@ import type { WafermapProps } from './wafermap'
 import { canvasLineSpace } from './constants'
 import { useMapinfo } from './use-mapinfo'
 
-export function useWafermapStyle(props: WafermapProps) {
+export function useWafermapStyle(props: Required<WafermapProps>) {
   const { dieWidth, dieHeight, mapPaddingLeft, mapPaddingTop } = useMapinfo(props)
 
   const containerStyle = computed(() => ({
