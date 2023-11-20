@@ -1,7 +1,17 @@
 {
   "name": "vue-wafer-painter",
   "description": "The Wafermap component library based on Vue 3 provides a versatile and customizable solution for visualizing wafermaps, commonly used in semiconductor manufacturing.",
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "author": "ttpss930141011 <https://github.com/ttpss930141011> (https://github.com/ttpss930141011)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ttpss930141011/vue-wafer-painter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ttpss930141011/vue-wafer-painter/issues"
+  },
+  "homepage": "https://vue-wafer-painter.justinxiao.app",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check build-only",
@@ -18,8 +28,16 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build -s public",
     "serve-storybook": "serve storybook-static",
-    "publish-storybook": "vercel --prod"
+    "publish-storybook": "vercel --prod",
+    "publish-npm": "npm publish"
   },
+  "type": "module",
+  "main": "dist/vue-wafer-painter.cjs.js",
+  "module": "dist/vue-wafer-painter.es.js",
+  "unpkg": "dist/vue-wafer-painter.iife.js",
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@floating-ui/vue": "1.0.2",
     "@popperjs/core": "2.11.8",
@@ -76,5 +94,15 @@
     }
   },
   "readme": "ERROR: No README data found!",
-  "_id": "vue-wafer-painter@0.0.0"
+  "_id": "vue-wafer-painter@0.0.0",
+  "keywords": [
+    "vue",
+    "vue2",
+    "vue3",
+    "vite",
+    "components",
+    "ui",
+    "wafer",
+    "wafermap"
+  ]
 }

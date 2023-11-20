@@ -1,6 +1,6 @@
 <div align="center">
 <h1 align="center">
-<img src="./public/logo.svg" width="100" />
+<img src="./static/logo.svg" width="100" />
 <br>vue-wafer-painter
 </h1>
 <h3>◦ Paint your wafer to stunning Vue apps!</h3>
