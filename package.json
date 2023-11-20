@@ -1,7 +1,8 @@
 {
   "name": "vue-wafer-painter",
   "description": "The Wafermap component library based on Vue 3 provides a versatile and customizable solution for visualizing wafermaps, commonly used in semiconductor manufacturing.",
-  "version": "1.0.1",
+  "version": "1.0.7",
+  "private": false,
   "author": "ttpss930141011 <https://github.com/ttpss930141011> (https://github.com/ttpss930141011)",
   "license": "MIT",
   "repository": {
@@ -32,15 +33,24 @@
     "publish-npm": "npm publish"
   },
   "type": "module",
-  "main": "dist/vue-wafer-painter.cjs.js",
+  "main": "dist/vue-wafer-painter.umd.js",
   "module": "dist/vue-wafer-painter.es.js",
-  "unpkg": "dist/vue-wafer-painter.iife.js",
+  "exports": {
+    ".": {
+      "types": "./dist/vue-wafer-painter.d.ts",
+      "import": "./dist/vue-wafer-painter.es.js",
+      "require": "./dist/vue-wafer-painter.umd.js"
+    },
+    "./dist/style.css": "./dist/index.css"
+  },
   "files": [
-    "dist"
+    "/dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@floating-ui/vue": "1.0.2",
-    "@popperjs/core": "2.11.8",
     "lodash": "4.17.21",
     "vue": "3.3.8"
   },
@@ -85,6 +95,7 @@
     "storybook": "7.5.3",
     "typescript": "5.2.2",
     "vite": "5.0.0",
+    "vite-plugin-dts": "^3.6.3",
     "vitest": "0.34.6",
     "vue-tsc": "1.8.22"
   },
