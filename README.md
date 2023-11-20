@@ -62,46 +62,35 @@ To use this wafermap component, follow these steps:
    npm install vue-wafer-painter
    ```
 
-2. Import the component into your Vue application:
+2. Import CSS in main.js / main.ts:
 
    ```javascript
-   import VWafermap from 'vue-wafer-painter'
+   import { createApp } from 'vue'
+   import './style.css'
+
+   import 'vue-wafer-painter/dist/style.css' // add this row
+
+   import App from './App.vue'
+
+   createApp(App).mount('#app')
    ```
 
-3. Add the VWafermap component to your template:
+3. Import and add the component to your template:
 
    ```html
    <template>
      <v-wafermap :width="800" :height="800" :coords="[{...your coords}]" />
    </template>
+   <script setup lang="ts">
+     import { ref } from "vue";
+     import { VWafermap } from "vue-wafer-painter";
+     ...
+   </script>
    ```
 
 ### Usage
 
 <details closed><summary>VWafermap</summary>
-
-Here's a example of Coords data:
-
-```javascript
-//src\packages\VWafermap\src\types.ts
-
-export interface Coords {
-  info: Array<string>
-  x: number
-  y: number
-  dut: number
-  color: string
-}
-
-const coords = [
-  { x: -2, y: -2, info: ['1'], dut: 1, color: '#ff8080' },
-  { x: 0, y: 1, info: ['2'], dut: 2, color: 'green' },
-  { x: 1, y: 0, info: ['4'], dut: 1, color: 'rgb(0, 102, 204)' }
-  { x: 2, y: 0, info: ['7', '789'], dut: 1, color: 'red' },
-  { x: 2, y: 2, info: ['9'], dut: 3, color: '#b800e6' }
-]
-
-```
 
 Here's the simplest example of using the VWafermap component:
 
@@ -109,18 +98,20 @@ Here's the simplest example of using the VWafermap component:
 <template>
   <v-wafermap :coords="coords" @onDie="handleDieHover" />
 </template>
-
-<script setup>
+<script setup lang="ts">
   import { ref } from 'vue'
-  import VWafermap from 'vue-wafer-painter'
+  import { VWafermap } from 'vue-wafer-painter'
 
   const coords = ref([
-    // many coords
+    { x: -2, y: -2, info: ['1'], dut: 1, color: '#ff8080' },
+    { x: 0, y: 1, info: ['2'], dut: 2, color: 'green' },
+    { x: 1, y: 0, info: ['4'], dut: 1, color: 'rgb(0, 102, 204)' },
+    { x: 2, y: 0, info: ['7', '789'], dut: 1, color: 'red' },
+    { x: 2, y: 2, info: ['9'], dut: 3, color: '#b800e6' }
   ])
 
-  const handleDieHover = (event, dieInfo) => {
-    // Handle the click on a die
-    console.log('Hovered on die:', dieInfo)
+  const handleDieHover = (event: MouseEvent, dieInfo: any) => {
+    console.log('Hovered on die:', event, dieInfo)
   }
 </script>
 ```
@@ -181,6 +172,10 @@ Here's the simplest example of using the VWafermap component:
 </details>
 
 ---
+
+## 📝 Todo
+
+- [x] Better TypeScript support
 
 ## 📄 License
 

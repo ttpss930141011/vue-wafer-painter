@@ -44,18 +44,30 @@ To use this wafermap component, follow these steps:
    npm install vue-wafer-painter
    ```
 
-2. Import the component into your Vue application:
+2. Import CSS in main.js / main.ts:
 
-   ```javascript
-   import VWafermap from 'vue-wafer-painter'
-   ```
+```javascript
+import { createApp } from 'vue'
+import './style.css'
 
-3. Add the VWafermap component to your template:
+import 'vue-wafer-painter/dist/style.css' // add this row
+
+import App from './App.vue'
+
+createApp(App).mount('#app')
+```
+
+3. Import and add the component to your template:
 
    ```html
    <template>
      <v-wafermap :width="800" :height="800" :coords="[{...your coords}]" />
    </template>
+   <script setup lang="ts">
+     import { ref } from "vue";
+     import { VWafermap } from "vue-wafer-painter";
+     ...
+   </script>
    ```
 
 ## 📄 License
