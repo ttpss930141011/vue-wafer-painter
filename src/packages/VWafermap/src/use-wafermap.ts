@@ -7,7 +7,7 @@ import { useWafermapStyle } from './wafermap-style'
 import type { WafermapEmits, WafermapProps } from './wafermap'
 import type { Coords, OnDieInfo } from './types'
 
-export const useWafer = (props: WafermapProps, emit: WafermapEmits) => {
+export const useWafer = (props: Required<WafermapProps>, emit: WafermapEmits) => {
   const waferFocus = ref<HTMLElement>()
   const focusTooltip = ref<HTMLElement>()
   const waferMapContainer = ref<HTMLElement>()
@@ -134,7 +134,7 @@ export const useWafer = (props: WafermapProps, emit: WafermapEmits) => {
    * @return {void} This function does not return any value.
    */
   const drawBackgroupd = () => {
-    if (!waferBg.value) return
+    if (!waferBg.value || !props.showBackground) return
 
     const ctx = waferBg.value.getContext('2d')
     if (!ctx) return
@@ -146,7 +146,7 @@ export const useWafer = (props: WafermapProps, emit: WafermapEmits) => {
     let notchWidth = 0
     let notchHeight = 0
 
-    ctx.fillStyle = '#C0C0C0'
+    ctx.fillStyle = props.backgroundColor
     ctx.beginPath()
     ctx.arc(centX, centY, centY, 0, 2 * Math.PI)
     ctx.fill()
@@ -181,6 +181,19 @@ export const useWafer = (props: WafermapProps, emit: WafermapEmits) => {
     ctx.fill()
   }
 
+  const drawNoData = () => {
+    if (!waferMap.value) return
+
+    const ctx = waferMap.value.getContext('2d')
+    if (!ctx) return
+
+    ctx.fillStyle = '#ffffff'
+    ctx.font = `100% ${props.fontFamily}`
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillText('No Data', ctx.canvas.width / 2, ctx.canvas.height / 2)
+  }
+
   /**
    * Draws filled rectangles on the canvas.
    *
@@ -188,6 +201,7 @@ export const useWafer = (props: WafermapProps, emit: WafermapEmits) => {
    */
   const drawFillRect = () => {
     if (!waferMap.value) return
+    if (props.coords.length === 0) return drawNoData()
 
     const ctx = waferMap.value.getContext('2d')
     if (!ctx) return
@@ -209,21 +223,21 @@ export const useWafer = (props: WafermapProps, emit: WafermapEmits) => {
    * @return {void} No return value.
    */
   const drawGrid = () => {
-    if (!waferGrid.value || !props.showGrid) return
+    if (!waferGrid.value || !props.showGrid || !props.coords.length) return
 
     const ctx = waferGrid.value.getContext('2d')
     if (!ctx) return
 
     ctx.beginPath()
-    ctx.strokeStyle = 'rgb(242,242,242)'
+    ctx.strokeStyle = props.gridColor
     ctx.lineWidth = 1
-    ctx.font = `${gridFontSize.value}px Arial`
+    ctx.font = `${gridFontSize.value}px ${props.fontFamily}`
 
     //vertical line
     for (let x = 1; x <= maxX.value - minX.value + yAsixTextColCount + 1; x++) {
       const xFixedPos = Math.floor(x * dieWidth.value) + 0.5
       ctx.moveTo(xFixedPos, dieHeight.value)
-      ctx.lineTo(xFixedPos, (maxY.value - minX.value + xAsixTextRowCount + 1) * dieHeight.value)
+      ctx.lineTo(xFixedPos, (maxY.value - minY.value + xAsixTextRowCount + 1) * dieHeight.value)
       ctx.stroke()
     }
 
@@ -242,15 +256,13 @@ export const useWafer = (props: WafermapProps, emit: WafermapEmits) => {
    * @return {void}
    */
   const drawAxisValues = () => {
-    if (!waferAxisValues.value || !props.showAxisValues) return
+    if (!waferAxisValues.value || !props.showAxisValues || !props.coords.length) return
 
     const ctx = waferAxisValues.value.getContext('2d')
     if (!ctx) return
 
     ctx.beginPath()
-    ctx.strokeStyle = 'rgb(242,242,242)'
-    ctx.lineWidth = 1
-    ctx.font = `${gridFontSize.value}px Arial`
+    ctx.font = `${gridFontSize.value}px ${props.fontFamily}`
 
     // horizontal line
     for (let x = yAsixTextColCount; x <= maxX.value - minX.value + yAsixTextColCount; x++) {
@@ -296,17 +308,17 @@ export const useWafer = (props: WafermapProps, emit: WafermapEmits) => {
 
     let fontSize = dieWidth.value > dieHeight.value ? dieHeight.value * 0.5 : dieWidth.value * 0.5
     const longestString = info.reduce((a, b) => (a.length > b.length ? a : b), '')
-    ctx.font = `${fontSize}px Arial`
+    ctx.font = `${fontSize}px ${props.fontFamily}`
 
     while (ctx.measureText(longestString).width > dieWidth.value) {
       //Calculate if it's going to go out of bounds, and if so, then fontsize--
       fontSize -= 0.5
-      ctx.font = `${fontSize}px Arial`
+      ctx.font = `${fontSize}px ${props.fontFamily}`
     }
     while (info.length * fontSize > dieHeight.value) {
       //Because it has to be placed up and down, so calculate whether the stack will exceed the border, if so, also fontsize--
       fontSize -= 0.5
-      ctx.font = `${fontSize}px Arial`
+      ctx.font = `${fontSize}px ${props.fontFamily}`
     }
 
     const textWidth = ctx.measureText(longestString).width
@@ -325,20 +337,21 @@ export const useWafer = (props: WafermapProps, emit: WafermapEmits) => {
    *
    * @return {void}
    */
-  const drawFillText = () => {
-    if (!waferInfo.value || !props.showDieInfo) return
+  const drawDieInfo = () => {
+    if (!waferInfo.value || !props.showDieInfo || !props.coords.length) return
 
     const ctx = waferInfo.value.getContext('2d')
     if (!ctx) return
 
-    ctx.fillStyle = 'black'
+    ctx.fillStyle = props.dieinfoColor
+    console.log('props.dieinfoColor', props.dieinfoColor)
 
     for (const coord of props.coords) {
       const dieTextInfo = _getDieTextInfo(coord.info)
       if (!dieTextInfo) return
 
       const { fontSize, offsetWidth, offsetHeight } = dieTextInfo
-      ctx.font = `${fontSize}px Arial`
+      ctx.font = `${fontSize}px ${props.fontFamily}`
 
       if (coord.info.length > 1) {
         //Text line breaking
@@ -367,7 +380,7 @@ export const useWafer = (props: WafermapProps, emit: WafermapEmits) => {
     _resetAllCanvas()
     drawBackgroupd()
     drawFillRect()
-    drawFillText()
+    drawDieInfo()
     drawAxisValues()
     drawGrid()
   }, 30)

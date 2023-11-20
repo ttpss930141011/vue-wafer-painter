@@ -3,21 +3,7 @@ import type { WafermapProps } from './wafermap'
 import { xAsixTextRowCount, yAsixTextColCount } from './constants'
 import _ from 'lodash'
 
-export const useMapinfo = (props: WafermapProps) => {
-  if (!props.coords.length) {
-    return {
-      minX: computed(() => 0),
-      minY: computed(() => 0),
-      maxX: computed(() => 0),
-      maxY: computed(() => 0),
-      dieWidth: computed(() => 0),
-      dieHeight: computed(() => 0),
-      mapPaddingLeft: computed(() => 0),
-      mapPaddingTop: computed(() => 0),
-      gridFontSize: computed(() => 0)
-    }
-  }
-
+export const useMapinfo = (props: Required<WafermapProps>) => {
   const minX = computed(() => {
     const xCoords = props.coords.map((item) => item.x)
     return _.min(xCoords) ?? 0
@@ -52,6 +38,7 @@ export const useMapinfo = (props: WafermapProps) => {
     const gridFontSize = minDieHW / String(maxXY).length
     return gridFontSize
   })
+
   return {
     minX,
     minY,

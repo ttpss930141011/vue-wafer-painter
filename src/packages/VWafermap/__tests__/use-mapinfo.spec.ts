@@ -5,45 +5,6 @@ import { WafermapProps } from '../src/wafermap'
 import { xAsixTextRowCount, yAsixTextColCount } from '../src/constants'
 
 test('useCounter', () => {
-  it('should be 0 by props.coords.length is 0', () => {
-    const props = {
-      coords: [],
-      width: 0,
-      height: 0,
-      showGrid: false,
-      notch: 'none',
-      showFocus: false,
-      showTooltip: false,
-      showDieInfo: false,
-      showAxisValues: false,
-      scaleSize: 0,
-      focusBorderColor: '',
-      focusBorderWidth: 0
-    } as WafermapProps
-
-    const {
-      minX,
-      minY,
-      maxX,
-      maxY,
-      dieWidth,
-      dieHeight,
-      mapPaddingLeft,
-      mapPaddingTop,
-      gridFontSize
-    } = useMapinfo(props)
-
-    expect(minX.value).toBe(0)
-    expect(minY.value).toBe(0)
-    expect(maxX.value).toBe(0)
-    expect(maxY.value).toBe(0)
-    expect(dieWidth.value).toBe(0)
-    expect(dieHeight.value).toBe(0)
-    expect(mapPaddingLeft.value).toBe(0)
-    expect(mapPaddingTop.value).toBe(0)
-    expect(gridFontSize.value).toBe(0)
-  })
-
   it('should calculate correctly minX, minY, maxX, maxY', () => {
     const props = {
       coords: [
@@ -62,7 +23,7 @@ test('useCounter', () => {
       scaleSize: 0,
       focusBorderColor: '',
       focusBorderWidth: 0
-    } as WafermapProps
+    } as Required<WafermapProps>
 
     const { minX, minY, maxX, maxY } = useMapinfo(props)
 
@@ -90,7 +51,7 @@ test('useCounter', () => {
       scaleSize: 1,
       focusBorderColor: '',
       focusBorderWidth: 0
-    } as WafermapProps
+    } as Required<WafermapProps>
 
     const { dieWidth, dieHeight } = useMapinfo(props)
 
@@ -116,7 +77,7 @@ test('useCounter', () => {
       scaleSize: 1,
       focusBorderColor: '',
       focusBorderWidth: 0
-    } as WafermapProps
+    } as Required<WafermapProps>
 
     const { mapPaddingLeft, mapPaddingTop } = useMapinfo(props)
 
@@ -142,7 +103,7 @@ test('useCounter', () => {
       scaleSize: 1,
       focusBorderColor: '',
       focusBorderWidth: 0
-    } as WafermapProps
+    } as Required<WafermapProps>
 
     const { gridFontSize } = useMapinfo(props)
 

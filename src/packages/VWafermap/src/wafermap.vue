@@ -53,14 +53,19 @@ const props = withDefaults(defineProps<WafermapProps>(), {
   coords: () => [],
   width: 500,
   height: 500,
+  fontFamily: 'Arial, Helvetica, sans-serif',
   notch: 'top',
   showGrid: true,
+  gridColor: '#f2f2f2',
+  showBackground: true,
+  backgroundColor: '#C0C0C0',
   showFocus: true,
   showTooltip: true,
   showAxisValues: true,
   showDieInfo: true,
+  dieinfoColor: '#000000',
   scaleSize: 0.7,
-  focusBorderColor: 'blue',
+  focusBorderColor: '#0000ff',
   focusBorderWidth: 1
 })
 
