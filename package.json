@@ -48,7 +48,7 @@
     "@actions/github": "6.0.0",
     "@octokit/core": "5.0.1",
     "@rushstack/eslint-patch": "1.5.1",
-    "@storybook/addon-docs": "^7.5.3",
+    "@storybook/addon-docs": "7.5.3",
     "@storybook/addon-essentials": "7.5.3",
     "@storybook/addon-interactions": "7.5.3",
     "@storybook/addon-links": "7.5.3",
