@@ -1,8 +1,9 @@
-const fs = require('fs')
-const path = require('path')
-const readline = require('readline')
-const { Octokit } = require('@octokit/core')
-const { context } = require('@actions/github')
+import fs from 'fs'
+import path from 'path'
+import readline from 'readline'
+import { Octokit } from '@octokit/core'
+import { context } from '@actions/github'
+import process from 'process'
 
 const knipScanResultPath = path.join(process.cwd(), 'knipScanResult.txt')
 
