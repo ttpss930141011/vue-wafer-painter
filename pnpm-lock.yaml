@@ -17,7 +17,7 @@ specifiers:
   '@types/jsdom': 21.1.6
   '@types/lodash': 4.14.202
   '@types/node': 20.10.0
-  '@vitejs/plugin-vue': 4.5.0
+  '@vitejs/plugin-vue': 5.0.2
   '@vitejs/plugin-vue-jsx': 3.1.0
   '@vue/eslint-config-prettier': 8.0.0
   '@vue/eslint-config-typescript': 12.0.0
@@ -69,7 +69,7 @@ devDependencies:
   '@types/jsdom': 21.1.6
   '@types/lodash': 4.14.202
   '@types/node': 20.10.0
-  '@vitejs/plugin-vue': 4.5.0_vite@5.0.2+vue@3.3.8
+  '@vitejs/plugin-vue': 5.0.2_vite@5.0.2+vue@3.3.8
   '@vitejs/plugin-vue-jsx': 3.1.0_vite@5.0.2+vue@3.3.8
   '@vue/eslint-config-prettier': 8.0.0_qzl47x2enemxh4nfvjfgxud5we
   '@vue/eslint-config-typescript': 12.0.0_bf5qo7ezdr7ub2cprr6cr44qom
@@ -4076,7 +4076,7 @@ packages:
       ts-dedent: 2.2.0
       type-fest: 2.19.0
       vue: 3.3.8_typescript@5.3.2
-      vue-component-type-helpers: 1.8.26
+      vue-component-type-helpers: 1.8.27
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -4612,6 +4612,17 @@ packages:
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
       vite: ^4.0.0 || ^5.0.0
+      vue: ^3.2.25
+    dependencies:
+      vite: 5.0.2_sq4jgn52aaumjx4eyvsjlow54i
+      vue: 3.3.8_typescript@5.3.2
+    dev: true
+
+  /@vitejs/plugin-vue/5.0.2_vite@5.0.2+vue@3.3.8:
+    resolution: {integrity: sha512-kEjJHrLb5ePBvjD0SPZwJlw1QTRcjjCA9sB5VyfonoXVBxTS7TMnqL6EkLt1Eu61RDeiuZ/WN9Hf6PxXhPI2uA==}
+    engines: {node: ^18.0.0 || >=20.0.0}
+    peerDependencies:
+      vite: ^5.0.0
       vue: ^3.2.25
     dependencies:
       vite: 5.0.2_sq4jgn52aaumjx4eyvsjlow54i
@@ -11554,8 +11565,8 @@ packages:
     resolution: {integrity: sha512-LK3wJHs3vJxHG292C8cnsRusgyC5SEZDCzDCD01mdE/AoREFMl2tzLRuzwyuEsOIz13tqgBcnvysN3Lxsa14Fw==}
     dev: true
 
-  /vue-component-type-helpers/1.8.26:
-    resolution: {integrity: sha512-CIwb7s8cqUuPpHDk+0DY8EJ/x8tzdzqw8ycX8hhw1GnbngTgSsIceHAqrrLjmv8zXi+j5XaiqYRQMw8sKyyjkw==}
+  /vue-component-type-helpers/1.8.27:
+    resolution: {integrity: sha512-0vOfAtI67UjeO1G6UiX5Kd76CqaQ67wrRZiOe7UAb9Jm6GzlUr/fC7CV90XfwapJRjpCMaZFhv1V0ajWRmE9Dg==}
     dev: true
 
   /vue-demi/0.14.6_vue@3.3.8:
