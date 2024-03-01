@@ -27,7 +27,7 @@ jobs:
           path: node_modules
           key: deps-node-modules-${{ hashFiles('**/pnpm-lock.yaml') }}
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v3
         name: Install pnpm
         with:
           version: 7.1.5
