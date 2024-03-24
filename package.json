@@ -1,7 +1,7 @@
 {
   "name": "vue-wafer-painter",
   "description": "The Wafermap component library based on Vue 3 provides a versatile and customizable solution for visualizing wafermaps, commonly used in semiconductor manufacturing.",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "private": false,
   "author": "ttpss930141011 <https://github.com/ttpss930141011> (https://github.com/ttpss930141011)",
   "license": "MIT",
@@ -27,7 +27,7 @@
     "prepare": "husky install",
     "pre-commit": "lint-staged",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build -s public",
+    "build-storybook": "storybook build --docs",
     "serve-storybook": "serve storybook-static",
     "publish-storybook": "vercel --prod",
     "publish-npm": "npm publish"
