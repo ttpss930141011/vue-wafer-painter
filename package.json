@@ -81,7 +81,7 @@
     "eslint-plugin-storybook": "0.8.0",
     "eslint-plugin-vue": "9.24.0",
     "husky": "8.0.3",
-    "jsdom": "22.1.0",
+    "jsdom": "24.0.0",
     "knip": "3.13.2",
     "lint-staged": "15.2.2",
     "npm-run-all2": "5.0.2",
