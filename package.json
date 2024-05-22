@@ -52,7 +52,7 @@
   "dependencies": {
     "@floating-ui/vue": "1.0.6",
     "lodash": "4.17.21",
-    "vue": "3.4.21"
+    "vue": "3.4.27"
   },
   "devDependencies": {
     "@actions/github": "6.0.0",
